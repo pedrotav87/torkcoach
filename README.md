@@ -198,6 +198,16 @@ Select **`/dist`** folder in GitHub Pages settings.
 - [BUILD_DOCUMENTATION.md](./BUILD_DOCUMENTATION.md) - Technical details
 - [BUILD_STRUCTURE.md](./BUILD_STRUCTURE.md) - Output structure
 
+### ⚠️ Important: Custom Domain Setup
+
+**If using a custom domain (like `coach.tork.pro`)**, you MUST authorize it in Firebase:
+
+🚨 **[QUICK_DOMAIN_FIX.md](./QUICK_DOMAIN_FIX.md)** - Authorize coach.tork.pro (2 min)
+
+Without this step, external users will see authentication errors.
+
+📖 **Detailed guide:** [AUTHORIZE_DOMAIN.md](./AUTHORIZE_DOMAIN.md)
+
 ### Alternative: Firebase Hosting
 
 ```bash
@@ -221,12 +231,22 @@ MIT License - See LICENSE file for details
 
 ## 📚 Additional Documentation
 
+### Setup & Configuration
+- [QUICKSTART.md](./QUICKSTART.md) - 10-minute setup guide for beginners
+- [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) - Detailed Firebase setup guide
+- [FIREBASE_QUICK_CONFIG.md](./FIREBASE_QUICK_CONFIG.md) - Visual Firebase quick reference
+
+### Deployment
 - [QUICK_DEPLOY.md](./QUICK_DEPLOY.md) - 3-step GitHub Pages deployment
 - [GITHUB_PAGES_DEPLOYMENT.md](./GITHUB_PAGES_DEPLOYMENT.md) - Complete deployment guide
 - [BUILD_DOCUMENTATION.md](./BUILD_DOCUMENTATION.md) - Build process and configuration
 - [BUILD_STRUCTURE.md](./BUILD_STRUCTURE.md) - Output structure and file details
-- [QUICKSTART.md](./QUICKSTART.md) - 10-minute setup guide for beginners
-- [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) - Detailed Firebase setup guide
+
+### Custom Domain Setup
+- [QUICK_DOMAIN_FIX.md](./QUICK_DOMAIN_FIX.md) - Authorize custom domain (2 min) 🚨
+- [AUTHORIZE_DOMAIN.md](./AUTHORIZE_DOMAIN.md) - Complete domain authorization guide
+
+### Technical Documentation
 - [PRD.md](./PRD.md) - Product requirements document
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture overview
 - [SECURITY_REQUIREMENTS.md](./SECURITY_REQUIREMENTS.md) - Security guidelines
