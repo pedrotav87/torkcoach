@@ -67,25 +67,40 @@ export function calculateVolumeLoad(workouts: WorkoutLog[]): number {
 }
 
 export function generateAIPromptForCheckIn(checkIn: CheckIn, client: Client): string {
-  return window.spark.llmPrompt`You are an expert bodybuilding coach analyzing a client check-in.
+  const clientName = client.name
+  const trainingAge = client.profile.trainingAge
+  const goals = client.profile.goals.join(', ')
+  const weakPoints = client.profile.weakPoints.join(', ')
+  const volumeTolerance = client.profile.volumeTolerance
+  const weight = checkIn.weight
+  const targetWeight = client.metrics.targetWeight
+  const energy = checkIn.responses.energy
+  const hunger = checkIn.responses.hunger
+  const sleep = checkIn.responses.sleep
+  const stress = checkIn.responses.stress
+  const adherence = checkIn.responses.adherence
+  const enjoyment = checkIn.responses.enjoyment
+  const notes = checkIn.notes || 'None provided'
+  
+  return (window.spark.llmPrompt as any)`You are an expert bodybuilding coach analyzing a client check-in.
 
 Client Profile:
-- Name: ${client.name}
-- Training Age: ${client.profile.trainingAge} years
-- Goals: ${client.profile.goals.join(', ')}
-- Weak Points: ${client.profile.weakPoints.join(', ')}
-- Volume Tolerance: ${client.profile.volumeTolerance}
+- Name: ${clientName}
+- Training Age: ${trainingAge} years
+- Goals: ${goals}
+- Weak Points: ${weakPoints}
+- Volume Tolerance: ${volumeTolerance}
 
 Check-In Data:
-- Weight: ${checkIn.weight} lbs (Target: ${client.metrics.targetWeight} lbs)
-- Energy Level: ${checkIn.responses.energy}/10
-- Hunger Level: ${checkIn.responses.hunger}/10
-- Sleep Quality: ${checkIn.responses.sleep}/10
-- Stress Level: ${checkIn.responses.stress}/10
-- Training Adherence: ${checkIn.responses.adherence}/10
-- Enjoyment: ${checkIn.responses.enjoyment}/10
+- Weight: ${weight} lbs (Target: ${targetWeight} lbs)
+- Energy Level: ${energy}/10
+- Hunger Level: ${hunger}/10
+- Sleep Quality: ${sleep}/10
+- Stress Level: ${stress}/10
+- Training Adherence: ${adherence}/10
+- Enjoyment: ${enjoyment}/10
 
-Client Notes: ${checkIn.notes || 'None provided'}
+Client Notes: ${notes}
 
 Provide a concise 2-3 sentence coaching summary highlighting:
 1. Key observations (positive or concerning patterns)
@@ -95,7 +110,7 @@ Be supportive, specific, and focus on hypertrophy training principles.`
 }
 
 export async function generateCheckInInsights(checkIn: CheckIn, client: Client) {
-  const prompt = window.spark.llmPrompt`You are an expert bodybuilding coach analyzing a client check-in. Generate 3-5 specific, actionable insights.
+  const prompt: string = (window.spark.llmPrompt as any)`You are an expert bodybuilding coach analyzing a client check-in. Generate 3-5 specific, actionable insights.
 
 Client Profile:
 - Name: ${client.name}
@@ -154,7 +169,7 @@ export function generateAIPromptForProgression(client: Client, recentWorkouts: W
     recentWorkouts.length
   )
   
-  return window.spark.llmPrompt`You are an expert bodybuilding coach reviewing training progression.
+  return (window.spark.llmPrompt as any)`You are an expert bodybuilding coach reviewing training progression.
 
 Client: ${client.name}
 Training Age: ${client.profile.trainingAge} years
@@ -174,7 +189,7 @@ Keep response concise and actionable (3-4 sentences).`
 }
 
 export function generateAIPromptForProgramReview(client: Client, adherence: number): string {
-  return window.spark.llmPrompt`You are a bodybuilding coach reviewing a client's weekly performance.
+  return (window.spark.llmPrompt as any)`You are a bodybuilding coach reviewing a client's weekly performance.
 
 Client: ${client.name}
 Goals: ${client.profile.goals.join(', ')}
