@@ -183,13 +183,22 @@ VITE_USE_FIREBASE_EMULATOR=false
 
 ## 🚢 Deployment
 
-### Build for Production
+### GitHub Pages (Recommended)
 
+**Quick Deploy:**
 ```bash
 npm run build
 ```
 
-### Deploy to Firebase Hosting
+Select **`/dist`** folder in GitHub Pages settings.
+
+📖 **Detailed guides:**
+- [QUICK_DEPLOY.md](./QUICK_DEPLOY.md) - 3-step deployment (fastest)
+- [GITHUB_PAGES_DEPLOYMENT.md](./GITHUB_PAGES_DEPLOYMENT.md) - Complete guide
+- [BUILD_DOCUMENTATION.md](./BUILD_DOCUMENTATION.md) - Technical details
+- [BUILD_STRUCTURE.md](./BUILD_STRUCTURE.md) - Output structure
+
+### Alternative: Firebase Hosting
 
 ```bash
 firebase login
@@ -212,6 +221,10 @@ MIT License - See LICENSE file for details
 
 ## 📚 Additional Documentation
 
+- [QUICK_DEPLOY.md](./QUICK_DEPLOY.md) - 3-step GitHub Pages deployment
+- [GITHUB_PAGES_DEPLOYMENT.md](./GITHUB_PAGES_DEPLOYMENT.md) - Complete deployment guide
+- [BUILD_DOCUMENTATION.md](./BUILD_DOCUMENTATION.md) - Build process and configuration
+- [BUILD_STRUCTURE.md](./BUILD_STRUCTURE.md) - Output structure and file details
 - [QUICKSTART.md](./QUICKSTART.md) - 10-minute setup guide for beginners
 - [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) - Detailed Firebase setup guide
 - [PRD.md](./PRD.md) - Product requirements document
