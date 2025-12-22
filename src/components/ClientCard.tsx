@@ -13,6 +13,7 @@ import {
 } from '@phosphor-icons/react'
 import { getClientStatusColor, formatRelativeTime } from '@/lib/helpers'
 import { motion } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
 interface ClientCardProps {
   client: Client
@@ -36,58 +37,58 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
       transition={{ duration: 0.2 }}
     >
       <Card 
-        className="p-4 cursor-pointer hover:shadow-lg transition-shadow"
+        className="p-3 sm:p-4 cursor-pointer hover:shadow-lg transition-shadow"
         onClick={onClick}
       >
-        <div className="flex items-start gap-4">
-          <Avatar className="h-14 w-14 border-2 border-primary/20">
-            <AvatarFallback className="bg-primary/10 text-primary font-semibold text-lg">
+        <div className="flex items-start gap-3 sm:gap-4">
+          <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 flex-shrink-0">
+            <AvatarFallback className="bg-primary/10 text-primary font-semibold text-base sm:text-lg">
               {client.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
             </AvatarFallback>
           </Avatar>
           
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-2">
-              <div>
-                <h3 className="font-semibold text-lg truncate">{client.name}</h3>
-                <p className="text-sm text-muted-foreground">
+              <div className="min-w-0 flex-1">
+                <h3 className="font-semibold text-base sm:text-lg truncate">{client.name}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {client.profile.trainingAge}yr training age
                 </p>
               </div>
               
-              <Badge className={getClientStatusColor(client.status)}>
+              <Badge className={cn(getClientStatusColor(client.status), 'flex-shrink-0')}>
                 <StatusIcon className="w-3 h-3 mr-1" weight="fill" />
-                {client.status.replace('-', ' ')}
+                <span className="hidden sm:inline">{client.status.replace('-', ' ')}</span>
               </Badge>
             </div>
             
-            <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-3">
               <div className="text-center">
                 <div className="text-xs text-muted-foreground">Workouts</div>
-                <div className="text-sm font-mono font-semibold">
+                <div className="text-xs sm:text-sm font-mono font-semibold">
                   {client.adherence.workoutCompliance}%
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-xs text-muted-foreground">Nutrition</div>
-                <div className="text-sm font-mono font-semibold">
+                <div className="text-xs sm:text-sm font-mono font-semibold">
                   {client.adherence.nutritionCompliance}%
                 </div>
               </div>
               <div className="text-center">
                 <div className="text-xs text-muted-foreground">Check-ins</div>
-                <div className="text-sm font-mono font-semibold">
+                <div className="text-xs sm:text-sm font-mono font-semibold">
                   {client.adherence.checkInCompliance}%
                 </div>
               </div>
             </div>
             
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 text-xs text-muted-foreground">
+              <span className="truncate">
                 Last workout: {client.lastWorkout ? formatRelativeTime(client.lastWorkout) : 'None'}
               </span>
               {client.nextCheckInDue && (
-                <span className="text-warning">
+                <span className="text-warning flex-shrink-0">
                   Check-in due: {formatRelativeTime(client.nextCheckInDue)}
                 </span>
               )}
@@ -99,17 +100,18 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
           <Button 
             size="sm" 
             variant="outline" 
-            className="flex-1"
+            className="flex-1 text-xs sm:text-sm"
             onClick={(e) => {
               e.stopPropagation()
             }}
           >
             <ChatCircle className="w-4 h-4 mr-1" />
-            Message
+            <span className="hidden sm:inline">Message</span>
           </Button>
           <Button 
             size="sm" 
             variant="outline"
+            className="px-3"
             onClick={(e) => {
               e.stopPropagation()
             }}

@@ -36,21 +36,21 @@ export function ClientDashboard({ clients, activities, onClientSelect, onCreateC
   
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base">
             Manage your coaching roster and track client activity
           </p>
         </div>
         
-        <Button onClick={onCreateClient} size="lg">
+        <Button onClick={onCreateClient} size="lg" className="w-full sm:w-auto">
           <Plus className="w-5 h-5 mr-2" weight="bold" />
           Add Client
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
             <Rss className="w-5 h-5 text-accent" weight="bold" />

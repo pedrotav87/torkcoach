@@ -115,10 +115,10 @@ export function ActivityFeed({ activities, onReact }: ActivityFeedProps) {
               transition={{ delay: index * 0.05 }}
             >
               <Card className="overflow-hidden hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex gap-4">
-                    <Avatar className="h-12 w-12 border-2 border-primary/20">
-                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex gap-3 sm:gap-4">
+                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-primary/20 flex-shrink-0">
+                      <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
                         {activity.clientName.split(' ').map(n => n[0]).join('').slice(0, 2)}
                       </AvatarFallback>
                     </Avatar>
@@ -126,10 +126,10 @@ export function ActivityFeed({ activities, onReact }: ActivityFeedProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold">{activity.clientName}</span>
+                          <span className="font-semibold text-sm sm:text-base">{activity.clientName}</span>
                           <Badge variant="outline" className={cn('text-xs', config.color, config.bgColor)}>
                             <Icon className="w-3 h-3 mr-1" weight="fill" />
-                            {config.label}
+                            <span className="hidden sm:inline">{config.label}</span>
                           </Badge>
                         </div>
                         <span className="text-xs text-muted-foreground whitespace-nowrap">
@@ -138,7 +138,7 @@ export function ActivityFeed({ activities, onReact }: ActivityFeedProps) {
                       </div>
 
                       <h4 className="font-semibold text-sm mb-1">{activity.title}</h4>
-                      <p className="text-sm text-muted-foreground mb-3">{activity.description}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-3">{activity.description}</p>
 
                       {activity.metadata && (
                         <div className="flex flex-wrap gap-2 mb-3">
@@ -172,7 +172,7 @@ export function ActivityFeed({ activities, onReact }: ActivityFeedProps) {
                         </div>
                       )}
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                         {reactionButtons.map(({ type, icon: ReactionIcon, label, color }) => {
                           const hasReacted = activity.reactions.some(r => r.type === type)
                           return (
@@ -180,11 +180,11 @@ export function ActivityFeed({ activities, onReact }: ActivityFeedProps) {
                               key={type}
                               variant={hasReacted ? 'secondary' : 'ghost'}
                               size="sm"
-                              className="h-8"
+                              className="h-7 sm:h-8 px-2 sm:px-3"
                               onClick={() => handleQuickReaction(activity.id, type)}
                             >
                               <ReactionIcon className={cn('w-4 h-4', hasReacted && color)} weight={hasReacted ? 'fill' : 'regular'} />
-                              <span className="ml-1 text-xs">{label}</span>
+                              <span className="ml-1 text-xs hidden sm:inline">{label}</span>
                             </Button>
                           )
                         })}
@@ -192,11 +192,11 @@ export function ActivityFeed({ activities, onReact }: ActivityFeedProps) {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-8"
+                          className="h-7 sm:h-8 px-2 sm:px-3"
                           onClick={() => setReplyingTo(isReplying ? null : activity.id)}
                         >
                           <ChatCircle className="w-4 h-4" />
-                          <span className="ml-1 text-xs">Message</span>
+                          <span className="ml-1 text-xs hidden sm:inline">Message</span>
                         </Button>
                       </div>
 

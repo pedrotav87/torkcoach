@@ -4,6 +4,7 @@ import { Client, Program, CheckIn, AIInsight, Notification, ActivityFeedItem, Ac
 import { ClientDashboard } from '@/components/ClientDashboard'
 import { ClientProfile } from '@/components/ClientProfile'
 import { CheckInAnalysis } from '@/components/CheckInAnalysis'
+import { MobileNav } from '@/components/MobileNav'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -234,17 +235,33 @@ function App() {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-        <div className="container flex h-16 items-center justify-between px-6">
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2">
+            <MobileNav
+              currentView={currentView}
+              clientCount={safeClients.length}
+              unreviewedCheckIns={safeCheckIns.filter(c => !c.coachReviewed).length}
+              onNavigate={(view) => {
+                setCurrentView(view)
+                setSelectedClient(null)
+                setSelectedCheckIn(null)
+              }}
+              onCheckInClick={() => {
+                const unreviewedCheckIns = safeCheckIns.filter(c => !c.coachReviewed)
+                if (unreviewedCheckIns.length > 0) {
+                  handleReviewCheckIn(unreviewedCheckIns[0])
+                }
+              }}
+            />
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <Barbell className="w-5 h-5 text-primary-foreground" weight="bold" />
               </div>
-              <span className="text-xl font-bold">Tork Coach</span>
+              <span className="text-lg sm:text-xl font-bold">Tork Coach</span>
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="w-5 h-5" />
               {unreadNotifications > 0 && (
@@ -254,12 +271,18 @@ function App() {
               )}
             </Button>
             
-            <div className="flex items-center gap-3 pl-4 border-l">
-              <div className="text-right">
+            <div className="hidden sm:flex items-center gap-3 pl-4 border-l">
+              <div className="text-right hidden md:block">
                 <div className="text-sm font-semibold">Coach Mike</div>
                 <div className="text-xs text-muted-foreground">Pro Account</div>
               </div>
               <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
+                MC
+              </div>
+            </div>
+            
+            <div className="sm:hidden">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">
                 MC
               </div>
             </div>
@@ -342,7 +365,7 @@ function App() {
           </div>
         </aside>
         
-        <main className="flex-1 p-6 lg:p-8">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <div className="container max-w-7xl mx-auto">
             {currentView === 'dashboard' && (
               <ClientDashboard

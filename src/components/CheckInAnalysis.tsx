@@ -125,14 +125,14 @@ export function CheckInAnalysis({ checkIn, client, onSave, onGenerate }: CheckIn
   return (
     <Card className="border-2">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
               <Brain className="w-6 h-6 text-accent" weight="bold" />
             </div>
-            <div>
-              <CardTitle>Check-In Analysis</CardTitle>
-              <CardDescription>
+            <div className="min-w-0 flex-1">
+              <CardTitle className="text-base sm:text-lg">Check-In Analysis</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
                 {formatDate(checkIn.date)} • {client.name}
               </CardDescription>
             </div>
@@ -143,30 +143,31 @@ export function CheckInAnalysis({ checkIn, client, onSave, onGenerate }: CheckIn
             disabled={isGenerating}
             variant="outline"
             size="sm"
+            className="w-full sm:w-auto"
           >
             <Sparkle className="w-4 h-4 mr-2" weight={isGenerating ? 'regular' : 'fill'} />
-            {isGenerating ? 'Analyzing...' : 'Generate AI Insights'}
+            <span className="text-xs sm:text-sm">{isGenerating ? 'Analyzing...' : 'Generate AI Insights'}</span>
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
+      <CardContent className="space-y-4 sm:space-y-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 p-3 sm:p-4 bg-muted/30 rounded-lg">
           <div>
             <div className="text-xs text-muted-foreground mb-1">Energy</div>
-            <div className="text-2xl font-mono font-bold">{checkIn.responses.energy}/10</div>
+            <div className="text-xl sm:text-2xl font-mono font-bold">{checkIn.responses.energy}/10</div>
           </div>
           <div>
             <div className="text-xs text-muted-foreground mb-1">Sleep</div>
-            <div className="text-2xl font-mono font-bold">{checkIn.responses.sleep}/10</div>
+            <div className="text-xl sm:text-2xl font-mono font-bold">{checkIn.responses.sleep}/10</div>
           </div>
           <div>
             <div className="text-xs text-muted-foreground mb-1">Stress</div>
-            <div className="text-2xl font-mono font-bold">{checkIn.responses.stress}/10</div>
+            <div className="text-xl sm:text-2xl font-mono font-bold">{checkIn.responses.stress}/10</div>
           </div>
           <div>
             <div className="text-xs text-muted-foreground mb-1">Adherence</div>
-            <div className="text-2xl font-mono font-bold">{checkIn.responses.adherence}/10</div>
+            <div className="text-xl sm:text-2xl font-mono font-bold">{checkIn.responses.adherence}/10</div>
           </div>
         </div>
 
@@ -182,9 +183,9 @@ export function CheckInAnalysis({ checkIn, client, onSave, onGenerate }: CheckIn
         <Separator />
 
         <div>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between mb-4">
             <h3 className="text-sm font-semibold">AI Insights</h3>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {(['observation', 'recommendation', 'concern', 'positive'] as const).map((type) => (
                 <Button
                   key={type}
