@@ -1,27 +1,25 @@
 import { cn } from '@/lib/utils'
 import { Barbell } from '@phosphor-icons/react'
 
-}
-export function Logo
-    sm: 'text-base',
+interface LogoProps {
+  className?: string
+  size?: 'sm' | 'md' | 'lg'
 }
 
 export function Logo({ className, size = 'md' }: LogoProps) {
   const sizeClasses = {
     sm: 'text-base',
     md: 'text-xl',
-    <div className=
-        <Barbell c
-   
-  
-  )
+    lg: 'text-3xl'
+  }
 
+  const iconSizes = {
+    sm: 16,
+    md: 20,
+    lg: 28
+  }
 
-
-
-
-
-
+  return (
     <div className={cn('flex items-center gap-2', className)}>
       <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary">
         <Barbell className="text-primary-foreground" size={iconSizes[size]} weight="bold" />

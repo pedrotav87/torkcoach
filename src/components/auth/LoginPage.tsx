@@ -59,7 +59,7 @@ export const LoginPage = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <Logo size="xl" />
+            <Logo size="lg" />
           </div>
           <p className="text-muted-foreground">Professional Bodybuilding CRM Platform</p>
         </div>

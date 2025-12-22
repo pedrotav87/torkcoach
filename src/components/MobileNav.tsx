@@ -9,14 +9,15 @@ import {
   ChatCircle, 
   ChartLine,
   List,
-  Sparkle
+  Sparkle,
+  UserCircle
 } from '@phosphor-icons/react'
 
 interface MobileNavProps {
-  currentView: 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics' | 'client-profile' | 'check-in-review'
+  currentView: 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics' | 'trainer-profile' | 'client-profile' | 'check-in-review'
   clientCount: number
   unreviewedCheckIns: number
-  onNavigate: (view: 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics') => void
+  onNavigate: (view: 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics' | 'trainer-profile') => void
   onCheckInClick: () => void
 }
 
@@ -106,6 +107,15 @@ export function MobileNav({
             >
               <ChartLine className="w-5 h-5 mr-3" weight={currentView === 'analytics' ? 'fill' : 'regular'} />
               Analytics
+            </Button>
+            
+            <Button 
+              variant={currentView === 'trainer-profile' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => onNavigate('trainer-profile')}
+            >
+              <UserCircle className="w-5 h-5 mr-3" weight={currentView === 'trainer-profile' ? 'fill' : 'regular'} />
+              Trainer Profile
             </Button>
           </nav>
           

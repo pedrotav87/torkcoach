@@ -11,6 +11,7 @@ import { ProgramsPage } from '@/components/pages/ProgramsPage'
 import { CheckInsPage } from '@/components/pages/CheckInsPage'
 import { MessagesPage } from '@/components/pages/MessagesPage'
 import { AnalyticsPage } from '@/components/pages/AnalyticsPage'
+import { TrainerProfilePage } from '@/components/pages/TrainerProfilePage'
 import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -24,14 +25,15 @@ import {
   ChartLine,
   Bell,
   Sparkle,
-  SignOut
+  SignOut,
+  UserCircle
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { generateCheckInInsights } from '@/lib/helpers'
 import { generateDemoClients, generateDemoPrograms, generateDemoCheckIns, generateDemoActivities } from '@/lib/demoData'
 import { toast } from 'sonner'
 
-type View = 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics' | 'client-profile' | 'check-in-review'
+type View = 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics' | 'trainer-profile' | 'client-profile' | 'check-in-review'
 
 function App() {
   const { user, loading: authLoading, signOut, isCoach, enterDemoMode } = useAuth()
@@ -399,6 +401,19 @@ function App() {
               <ChartLine className="w-5 h-5 mr-3" weight={currentView === 'analytics' ? 'fill' : 'regular'} />
               Analytics
             </Button>
+            
+            <Button 
+              variant={currentView === 'trainer-profile' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => {
+                setCurrentView('trainer-profile')
+                setSelectedClient(null)
+                setSelectedCheckIn(null)
+              }}
+            >
+              <UserCircle className="w-5 h-5 mr-3" weight={currentView === 'trainer-profile' ? 'fill' : 'regular'} />
+              Trainer Profile
+            </Button>
           </nav>
           
           <div className="p-4 border-t">
@@ -438,6 +453,8 @@ function App() {
             {currentView === 'messages' && <MessagesPage />}
             
             {currentView === 'analytics' && <AnalyticsPage />}
+            
+            {currentView === 'trainer-profile' && <TrainerProfilePage />}
             
             {currentView === 'client-profile' && selectedClient && (
               <ClientProfile

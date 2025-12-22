@@ -49,6 +49,14 @@ export interface Injury {
   resolved: boolean
 }
 
+export interface Certification {
+  id: string
+  name: string
+  issuer: string
+  year: number
+  verified?: boolean
+}
+
 export interface Measurements {
   chest?: number
   shoulders?: number
@@ -324,3 +332,30 @@ export interface ActivityReaction {
 export type ViewMode = 'coach' | 'client'
 
 export type DashboardFilter = 'all' | 'active' | 'needs-attention' | 'overdue' | 'inactive'
+
+export interface TrainerProfile {
+  id: string
+  name: string
+  email: string
+  avatar?: string
+  bio?: string
+  specializations: string[]
+  certifications: Certification[]
+  experience: {
+    yearsCoaching: number
+    totalClients: number
+    successStories?: string
+  }
+  social?: {
+    instagram?: string
+    youtube?: string
+    website?: string
+  }
+  contactInfo: {
+    phone?: string
+    availability?: string
+    timezone?: string
+  }
+  createdAt: string
+  updatedAt: string
+}
