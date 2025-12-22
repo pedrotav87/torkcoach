@@ -17,6 +17,9 @@ export const LoginPage = () => {
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const isFirebaseConfigured = import.meta.env.VITE_FIREBASE_API_KEY && 
+    import.meta.env.VITE_FIREBASE_API_KEY !== 'demo-api-key'
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -29,7 +32,14 @@ export const LoginPage = () => {
         })
         
         if (error) {
-          toast.error('Sign up failed', { description: error.message })
+          const errorMessage = error.message.includes('email-already-in-use') 
+            ? 'This email is already registered'
+            : error.message.includes('weak-password')
+            ? 'Password should be at least 6 characters'
+            : error.message.includes('invalid-email')
+            ? 'Invalid email address'
+            : error.message
+          toast.error('Sign up failed', { description: errorMessage })
         } else {
           toast.success('Account created!', { description: 'Welcome to Tork Coach' })
         }
@@ -37,7 +47,12 @@ export const LoginPage = () => {
         const { error } = await signIn(email, password)
         
         if (error) {
-          toast.error('Login failed', { description: error.message })
+          const errorMessage = error.message.includes('user-not-found') || error.message.includes('wrong-password') || error.message.includes('invalid-credential')
+            ? 'Invalid email or password'
+            : error.message.includes('too-many-requests')
+            ? 'Too many failed attempts. Please try again later'
+            : error.message
+          toast.error('Login failed', { description: errorMessage })
         } else {
           toast.success('Welcome back!')
         }
@@ -51,7 +66,7 @@ export const LoginPage = () => {
 
   const handleDemoMode = () => {
     enterDemoMode()
-    toast.success('Entered demo mode', { description: 'Explore the platform with sample data' })
+    toast.success('Entering demo mode...', { description: 'Using demo credentials' })
   }
 
   return (
@@ -74,22 +89,30 @@ export const LoginPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              variant="outline" 
-              className="w-full mb-4" 
-              onClick={handleDemoMode}
-              type="button"
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              Try Demo Mode
-            </Button>
-
-            <div className="relative mb-4">
-              <Separator />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-                or continue with email
-              </span>
-            </div>
+            {!isFirebaseConfigured && (
+              <>
+                <div className="mb-4 p-3 bg-warning/10 border border-warning/20 rounded-lg">
+                  <p className="text-sm text-warning-foreground">
+                    <strong>Demo Mode:</strong> Firebase not configured. Using demo authentication.
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  className="w-full mb-4" 
+                  onClick={handleDemoMode}
+                  type="button"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Enter Demo Mode
+                </Button>
+                <div className="relative mb-4">
+                  <Separator />
+                  <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
+                    or
+                  </span>
+                </div>
+              </>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {isSignUp && (
@@ -132,6 +155,11 @@ export const LoginPage = () => {
                   disabled={loading}
                   minLength={6}
                 />
+                {isSignUp && (
+                  <p className="text-xs text-muted-foreground">
+                    Password must be at least 6 characters
+                  </p>
+                )}
               </div>
 
               <Button type="submit" className="w-full" disabled={loading}>
@@ -161,9 +189,21 @@ export const LoginPage = () => {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          By continuing, you agree to our Terms of Service and Privacy Policy
-        </p>
+        {isFirebaseConfigured ? (
+          <p className="text-center text-xs text-muted-foreground mt-6">
+            By continuing, you agree to our Terms of Service and Privacy Policy
+          </p>
+        ) : (
+          <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+            <p className="text-xs text-muted-foreground text-center mb-2">
+              <strong>Setup Instructions:</strong>
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Configure Firebase by creating a .env file with your Firebase credentials. 
+              See FIREBASE_SETUP.md for detailed instructions.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

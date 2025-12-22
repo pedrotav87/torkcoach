@@ -12,6 +12,7 @@ import { CheckInsPage } from '@/components/pages/CheckInsPage'
 import { MessagesPage } from '@/components/pages/MessagesPage'
 import { AnalyticsPage } from '@/components/pages/AnalyticsPage'
 import { TrainerProfilePage } from '@/components/pages/TrainerProfilePage'
+import { LoginPage } from '@/components/auth/LoginPage'
 import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -36,7 +37,7 @@ import { toast } from 'sonner'
 type View = 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics' | 'trainer-profile' | 'client-profile' | 'check-in-review'
 
 function App() {
-  const { user, loading: authLoading, signOut, isCoach, enterDemoMode } = useAuth()
+  const { user, loading: authLoading, signOut, isCoach } = useAuth()
   const [clients, setClients] = useKV<Client[]>('clients', [])
   const [programs] = useKV<Program[]>('programs', [])
   const [checkIns, setCheckIns] = useKV<CheckIn[]>('check-ins', [])
@@ -59,11 +60,7 @@ function App() {
   
   const unreadNotifications = safeNotifications.filter(n => !n.read).length
   
-  useEffect(() => {
-    if (!authLoading && !user) {
-      enterDemoMode()
-    }
-  }, [authLoading, user, enterDemoMode])
+
   
   useEffect(() => {
     if (user && !isInitialized) {
@@ -94,16 +91,7 @@ function App() {
   }
   
   if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary flex items-center justify-center">
-            <Barbell className="w-8 h-8 text-primary-foreground animate-pulse" weight="bold" />
-          </div>
-          <p className="text-muted-foreground">Initializing demo mode...</p>
-        </div>
-      </div>
-    )
+    return <LoginPage />
   }
   
   const handleClientSelect = (client: Client) => {

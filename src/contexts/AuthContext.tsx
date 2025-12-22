@@ -1,7 +1,15 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  User as FirebaseUser
+} from 'firebase/auth'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase'
 
-interface DemoUser {
+interface AppUser {
   uid: string
   email: string
   displayName: string
@@ -9,7 +17,7 @@ interface DemoUser {
 }
 
 interface AuthContextType {
-  user: DemoUser | null
+  user: AppUser | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
   signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{ error: Error | null }>
@@ -33,32 +41,43 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [currentUser, setCurrentUser] = useKV<DemoUser | null>('auth-user', null)
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(null)
   const [loading, setLoading] = useState(true)
   const [isCoach, setIsCoach] = useState(false)
 
   useEffect(() => {
-    const checkAuth = async () => {
-      if (currentUser) {
-        setIsCoach(currentUser.role === 'coach' || currentUser.role === 'admin')
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
+      if (firebaseUser) {
+        const userDocRef = doc(db, 'users', firebaseUser.uid)
+        const userDoc = await getDoc(userDocRef)
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data()
+          const appUser: AppUser = {
+            uid: firebaseUser.uid,
+            email: firebaseUser.email || '',
+            displayName: userData.displayName || firebaseUser.email?.split('@')[0] || 'User',
+            role: userData.role || 'coach'
+          }
+          setCurrentUser(appUser)
+          setIsCoach(appUser.role === 'coach' || appUser.role === 'admin')
+        } else {
+          setCurrentUser(null)
+          setIsCoach(false)
+        }
       } else {
+        setCurrentUser(null)
         setIsCoach(false)
       }
       setLoading(false)
-    }
-    checkAuth()
-  }, [currentUser])
+    })
+
+    return unsubscribe
+  }, [])
 
   const signIn = async (email: string, password: string) => {
     try {
-      const demoUser: DemoUser = {
-        uid: `user-${Date.now()}`,
-        email,
-        displayName: email.split('@')[0],
-        role: 'coach'
-      }
-      
-      setCurrentUser(demoUser)
+      await signInWithEmailAndPassword(auth, email, password)
       return { error: null }
     } catch (error) {
       return { error: error as Error }
@@ -67,14 +86,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     try {
-      const demoUser: DemoUser = {
-        uid: `user-${Date.now()}`,
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      
+      const userDocRef = doc(db, 'users', userCredential.user.uid)
+      await setDoc(userDocRef, {
         email,
         displayName: metadata?.displayName || email.split('@')[0],
-        role: metadata?.role || 'coach'
-      }
+        role: metadata?.role || 'coach',
+        createdAt: new Date().toISOString()
+      })
       
-      setCurrentUser(demoUser)
       return { error: null }
     } catch (error) {
       return { error: error as Error }
@@ -82,21 +103,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const signOut = async () => {
-    setCurrentUser(null)
+    await firebaseSignOut(auth)
   }
 
-  const enterDemoMode = () => {
-    const demoUser: DemoUser = {
-      uid: 'demo-user',
-      email: 'demo@torkcoach.com',
-      displayName: 'Demo Coach',
-      role: 'coach'
+  const enterDemoMode = async () => {
+    try {
+      await signInWithEmailAndPassword(auth, 'demo@torkcoach.com', 'demo123456')
+    } catch (error) {
+      console.error('Demo mode error:', error)
     }
-    setCurrentUser(demoUser)
   }
 
   const value: AuthContextType = {
-    user: currentUser ?? null,
+    user: currentUser,
     loading,
     signIn,
     signUp,

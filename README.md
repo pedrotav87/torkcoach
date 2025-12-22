@@ -20,6 +20,8 @@ A comprehensive bodybuilding coaching CRM platform built with React, TypeScript,
 
 ## 🛠️ Setup
 
+**🚀 New to Firebase? See [QUICKSTART.md](./QUICKSTART.md) for a step-by-step guide to get up and running in 10 minutes.**
+
 ### 1. Clone and Install
 
 ```bash
@@ -41,15 +43,33 @@ See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for detailed setup instructions.
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+The app will be available at `http://localhost:5173` and will show the **login page** by default.
 
 ## 🔐 Authentication
+
+**The application requires authentication to access any features.** The login page is the default entry point and no unauthenticated access is allowed.
 
 The app uses Firebase Authentication with role-based access control:
 
 - **Coach Role**: Full access to all features (assigned by default on signup)
 - **Admin Role**: Full access with additional administrative privileges
 - **Client Role**: Limited access (future implementation)
+
+### Demo Mode
+
+If Firebase is not configured (no `.env` file), the application will run in demo mode:
+- A "Demo Mode" button appears on the login page
+- Uses local storage for demonstration purposes
+- Not suitable for production use
+
+### Production Setup
+
+For external/public access with real authentication:
+
+1. **Configure Firebase** - Follow [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
+2. **Create your first coach account** - Sign up through the login page
+3. **Deploy** - The app is publicly accessible once deployed
+4. **Share** - Anyone can create an account and sign in
 
 All routes are protected and require authentication. Only users with the `coach` or `admin` role can access the platform.
 
@@ -182,6 +202,7 @@ MIT License - See LICENSE file for details
 
 ## 📚 Additional Documentation
 
+- [QUICKSTART.md](./QUICKSTART.md) - 10-minute setup guide for beginners
 - [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) - Detailed Firebase setup guide
 - [PRD.md](./PRD.md) - Product requirements document
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - System architecture overview
