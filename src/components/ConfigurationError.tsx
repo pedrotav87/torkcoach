@@ -7,8 +7,12 @@ import { useState } from 'react'
 export function ConfigurationError() {
   const [copied, setCopied] = useState(false)
 
-  const envContent = `VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key`
+  const envContent = `VITE_FIREBASE_API_KEY=AIzaSyA_your_actual_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your-project-id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your-project-id
+VITE_FIREBASE_STORAGE_BUCKET=your-project-id.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=123456789012
+VITE_FIREBASE_APP_ID=1:123456789012:web:abcdef123456`
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(envContent)
@@ -26,7 +30,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key`
             </div>
             <div>
               <CardTitle className="text-2xl">Tork Coach</CardTitle>
-              <CardDescription>Configuration Required</CardDescription>
+              <CardDescription>Firebase Configuration Required</CardDescription>
             </div>
           </div>
         </CardHeader>
@@ -34,16 +38,18 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key`
           <Alert>
             <WarningCircle className="w-5 h-5" />
             <AlertDescription>
-              Supabase environment variables are not configured. The application requires a valid Supabase connection to function.
+              Firebase environment variables are not configured. The application requires a valid Firebase connection for authentication and data storage.
             </AlertDescription>
           </Alert>
 
           <div className="space-y-3">
-            <h3 className="font-semibold text-sm">Setup Instructions:</h3>
+            <h3 className="font-semibold text-sm">Quick Setup Instructions:</h3>
             
             <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
-              <li>Create a Supabase project at <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">supabase.com</a></li>
-              <li>Copy your project URL and anon key from the project settings</li>
+              <li>Create a Firebase project at <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">console.firebase.google.com</a></li>
+              <li>Enable Email/Password authentication in the Authentication section</li>
+              <li>Create a Firestore database in production mode</li>
+              <li>Copy your project configuration from Project Settings</li>
               <li>Create a <code className="bg-muted px-1.5 py-0.5 rounded text-xs">.env</code> file in the project root directory</li>
               <li>Add the following content to your <code className="bg-muted px-1.5 py-0.5 rounded text-xs">.env</code> file:</li>
             </ol>
@@ -72,16 +78,18 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key`
               </Button>
             </div>
 
-            <ol start={5} className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
-              <li>Replace <code className="bg-muted px-1.5 py-0.5 rounded text-xs">your_supabase_project_url</code> with your actual Supabase URL</li>
-              <li>Replace <code className="bg-muted px-1.5 py-0.5 rounded text-xs">your_supabase_anon_key</code> with your actual anon key</li>
+            <ol start={7} className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
+              <li>Replace the placeholder values with your actual Firebase configuration</li>
               <li>Restart the development server</li>
             </ol>
           </div>
 
           <div className="pt-4 border-t">
+            <p className="text-xs text-muted-foreground mb-2">
+              <strong>Detailed Instructions:</strong>
+            </p>
             <p className="text-xs text-muted-foreground">
-              For detailed setup instructions, see <code className="bg-muted px-1.5 py-0.5 rounded">SUPABASE_SETUP.md</code> in the project root.
+              See <code className="bg-muted px-1.5 py-0.5 rounded">FIREBASE_SETUP.md</code> for complete step-by-step instructions, or check <code className="bg-muted px-1.5 py-0.5 rounded">QUICKSTART.md</code> for a 10-minute quick start guide.
             </p>
           </div>
         </CardContent>

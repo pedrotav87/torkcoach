@@ -20,30 +20,40 @@ A comprehensive bodybuilding coaching CRM platform built with React, TypeScript,
 
 ## 🛠️ Setup
 
-**🚀 New to Firebase? See [QUICKSTART.md](./QUICKSTART.md) for a step-by-step guide to get up and running in 10 minutes.**
+### Quick Setup (7 minutes)
 
-### 1. Clone and Install
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-```bash
-npm install
-```
+2. **Configure Firebase:**
+   - Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+   - Enable Email/Password authentication
+   - Create a Firestore database
+   - Copy your config to a `.env` file
 
-### 2. Configure Firebase
+3. **Start the app:**
+   ```bash
+   npm run dev
+   ```
 
-1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com)
-2. Enable Email/Password authentication
-3. Create a Firestore database
-4. Copy `.env.example` to `.env` and fill in your Firebase configuration
+### 📖 Setup Guides
 
-See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for detailed setup instructions.
+Choose the guide that fits your experience level:
 
-### 3. Run Development Server
+- **🚀 [FIREBASE_QUICK_CONFIG.md](./FIREBASE_QUICK_CONFIG.md)** - Visual quick reference (7 min)
+- **📘 [QUICKSTART.md](./QUICKSTART.md)** - Step-by-step tutorial (10 min)
+- **📚 [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)** - Complete documentation
 
-```bash
-npm run dev
-```
+### Demo Mode
 
-The app will be available at `http://localhost:5173` and will show the **login page** by default.
+The app works without Firebase configuration in **demo mode**:
+- Click "Enter Demo Mode" on login page
+- All data stored in browser
+- Perfect for testing features
+
+To enable full authentication and cloud sync, configure Firebase using one of the guides above.
 
 ## 🔐 Authentication
 

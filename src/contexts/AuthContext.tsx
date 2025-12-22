@@ -7,7 +7,7 @@ import {
   User as FirebaseUser
 } from 'firebase/auth'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
+import { auth, db, isFirebaseConfigured } from '@/lib/firebase'
 
 interface AppUser {
   uid: string
@@ -47,17 +47,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
-      if (firebaseUser) {
-        const userDocRef = doc(db, 'users', firebaseUser.uid)
-        const userDoc = await getDoc(userDocRef)
-        
-        if (userDoc.exists()) {
-          const userData = userDoc.data()
+      try {
+        if (firebaseUser) {
+          const userDocRef = doc(db, 'users', firebaseUser.uid)
+          
+          let userData: any = null
+          if (isFirebaseConfigured()) {
+            try {
+              const userDoc = await getDoc(userDocRef)
+              if (userDoc.exists()) {
+                userData = userDoc.data()
+              }
+            } catch (error) {
+              console.error('Error fetching user data:', error)
+            }
+          }
+          
           const appUser: AppUser = {
             uid: firebaseUser.uid,
             email: firebaseUser.email || '',
-            displayName: userData.displayName || firebaseUser.email?.split('@')[0] || 'User',
-            role: userData.role || 'coach'
+            displayName: userData?.displayName || firebaseUser.email?.split('@')[0] || 'Coach',
+            role: userData?.role || 'coach'
           }
           setCurrentUser(appUser)
           setIsCoach(appUser.role === 'coach' || appUser.role === 'admin')
@@ -65,11 +75,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setCurrentUser(null)
           setIsCoach(false)
         }
-      } else {
+      } catch (error) {
+        console.error('Auth state change error:', error)
         setCurrentUser(null)
         setIsCoach(false)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     })
 
     return unsubscribe
@@ -88,13 +100,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
       
-      const userDocRef = doc(db, 'users', userCredential.user.uid)
-      await setDoc(userDocRef, {
-        email,
-        displayName: metadata?.displayName || email.split('@')[0],
-        role: metadata?.role || 'coach',
-        createdAt: new Date().toISOString()
-      })
+      if (isFirebaseConfigured()) {
+        try {
+          const userDocRef = doc(db, 'users', userCredential.user.uid)
+          await setDoc(userDocRef, {
+            email,
+            displayName: metadata?.displayName || email.split('@')[0],
+            role: metadata?.role || 'coach',
+            createdAt: new Date().toISOString()
+          })
+        } catch (error) {
+          console.error('Error creating user document:', error)
+        }
+      }
       
       return { error: null }
     } catch (error) {
@@ -107,6 +125,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const enterDemoMode = async () => {
+    if (!isFirebaseConfigured()) {
+      const demoUser: AppUser = {
+        uid: 'demo-user-id',
+        email: 'demo@torkcoach.com',
+        displayName: 'Demo Coach',
+        role: 'coach'
+      }
+      setCurrentUser(demoUser)
+      setIsCoach(true)
+      return
+    }
+    
     try {
       await signInWithEmailAndPassword(auth, 'demo@torkcoach.com', 'demo123456')
     } catch (error) {

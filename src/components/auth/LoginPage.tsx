@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { Logo } from '@/components/Logo'
 import { Spinner, Eye } from '@phosphor-icons/react'
 import { toast } from 'sonner'
+import { isFirebaseConfigured } from '@/lib/firebase'
 
 export const LoginPage = () => {
   const { signIn, signUp, enterDemoMode } = useAuth()
@@ -17,8 +18,7 @@ export const LoginPage = () => {
   const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const isFirebaseConfigured = import.meta.env.VITE_FIREBASE_API_KEY && 
-    import.meta.env.VITE_FIREBASE_API_KEY !== 'demo-api-key'
+  const firebaseConfigured = isFirebaseConfigured()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -89,7 +89,7 @@ export const LoginPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {!isFirebaseConfigured && (
+            {!firebaseConfigured && (
               <>
                 <div className="mb-4 p-3 bg-warning/10 border border-warning/20 rounded-lg">
                   <p className="text-sm text-warning-foreground">
@@ -189,7 +189,7 @@ export const LoginPage = () => {
           </CardContent>
         </Card>
 
-        {isFirebaseConfigured ? (
+        {firebaseConfigured ? (
           <p className="text-center text-xs text-muted-foreground mt-6">
             By continuing, you agree to our Terms of Service and Privacy Policy
           </p>
