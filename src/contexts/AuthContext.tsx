@@ -1,22 +1,21 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { 
-  User, 
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  updateProfile
-} from 'firebase/auth'
-import { doc, setDoc, getDoc } from 'firebase/firestore'
-import { auth, db } from '@/lib/firebase'
+import { useKV } from '@github/spark/hooks'
+
+interface DemoUser {
+  uid: string
+  email: string
+  displayName: string
+  role: string
+}
 
 interface AuthContextType {
-  user: User | null
+  user: DemoUser | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
   signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   isCoach: boolean
+  enterDemoMode: () => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -34,37 +33,32 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null)
+  const [currentUser, setCurrentUser] = useKV<DemoUser | null>('auth-user', null)
   const [loading, setLoading] = useState(true)
   const [isCoach, setIsCoach] = useState(false)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser)
-      
-      if (firebaseUser) {
-        const userDocRef = doc(db, 'users', firebaseUser.uid)
-        const userDoc = await getDoc(userDocRef)
-        
-        if (userDoc.exists()) {
-          const userData = userDoc.data()
-          setIsCoach(userData.role === 'coach' || userData.role === 'admin')
-        } else {
-          setIsCoach(false)
-        }
+    const checkAuth = async () => {
+      if (currentUser) {
+        setIsCoach(currentUser.role === 'coach' || currentUser.role === 'admin')
       } else {
         setIsCoach(false)
       }
-      
       setLoading(false)
-    })
-
-    return () => unsubscribe()
-  }, [])
+    }
+    checkAuth()
+  }, [currentUser])
 
   const signIn = async (email: string, password: string) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      const demoUser: DemoUser = {
+        uid: `user-${Date.now()}`,
+        email,
+        displayName: email.split('@')[0],
+        role: 'coach'
+      }
+      
+      setCurrentUser(demoUser)
       return { error: null }
     } catch (error) {
       return { error: error as Error }
@@ -73,21 +67,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-      const user = userCredential.user
-      
-      if (metadata?.displayName) {
-        await updateProfile(user, { displayName: metadata.displayName })
+      const demoUser: DemoUser = {
+        uid: `user-${Date.now()}`,
+        email,
+        displayName: metadata?.displayName || email.split('@')[0],
+        role: metadata?.role || 'coach'
       }
       
-      await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        displayName: metadata?.displayName || '',
-        role: metadata?.role || 'coach',
-        createdAt: new Date().toISOString(),
-        ...metadata
-      })
-      
+      setCurrentUser(demoUser)
       return { error: null }
     } catch (error) {
       return { error: error as Error }
@@ -95,16 +82,27 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   const signOut = async () => {
-    await firebaseSignOut(auth)
+    setCurrentUser(null)
   }
 
-  const value = {
-    user,
+  const enterDemoMode = () => {
+    const demoUser: DemoUser = {
+      uid: 'demo-user',
+      email: 'demo@torkcoach.com',
+      displayName: 'Demo Coach',
+      role: 'coach'
+    }
+    setCurrentUser(demoUser)
+  }
+
+  const value: AuthContextType = {
+    user: currentUser ?? null,
     loading,
     signIn,
     signUp,
     signOut,
-    isCoach
+    isCoach,
+    enterDemoMode
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

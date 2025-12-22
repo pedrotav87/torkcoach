@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import { Logo } from '@/components/Logo'
-import { Spinner } from '@phosphor-icons/react'
+import { Spinner, Eye } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 export const LoginPage = () => {
-  const { signIn, signUp } = useAuth()
+  const { signIn, signUp, enterDemoMode } = useAuth()
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -23,14 +24,14 @@ export const LoginPage = () => {
     try {
       if (isSignUp) {
         const { error } = await signUp(email, password, {
-          full_name: fullName,
+          displayName: fullName,
           role: 'coach'
         })
         
         if (error) {
           toast.error('Sign up failed', { description: error.message })
         } else {
-          toast.success('Account created!', { description: 'Please check your email to verify your account.' })
+          toast.success('Account created!', { description: 'Welcome to Tork Coach' })
         }
       } else {
         const { error } = await signIn(email, password)
@@ -46,6 +47,11 @@ export const LoginPage = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleDemoMode = () => {
+    enterDemoMode()
+    toast.success('Entered demo mode', { description: 'Explore the platform with sample data' })
   }
 
   return (
@@ -68,6 +74,23 @@ export const LoginPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <Button 
+              variant="outline" 
+              className="w-full mb-4" 
+              onClick={handleDemoMode}
+              type="button"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Try Demo Mode
+            </Button>
+
+            <div className="relative mb-4">
+              <Separator />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
+                or continue with email
+              </span>
+            </div>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               {isSignUp && (
                 <div className="space-y-2">

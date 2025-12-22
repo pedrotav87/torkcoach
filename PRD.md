@@ -12,12 +12,12 @@ This is a multi-faceted CRM system with client management, workout programming, 
 
 ## Authentication & Security
 
-### Firebase Authentication
-- **Functionality**: Secure email/password authentication with Firebase, role-based access control (coaches only), protected routes, and session management
-- **Purpose**: Ensure only authorized coaches can access the platform while maintaining security best practices
-- **Trigger**: App loads; user attempts to access any route
-- **Progression**: User visits app → Login page displayed → Enter credentials → Authenticate with Firebase → Verify coach role in Firestore → Access granted → Session persists → Auto-refresh tokens → Sign out to end session
-- **Success criteria**: All routes protected; unauthorized access blocked; coaches can sign up/in seamlessly; sessions persist securely; clear error messages for auth failures
+### Public Access with Demo Mode
+- **Functionality**: Public access with demo mode for instant exploration, plus optional email/password authentication for personalized data persistence using browser storage
+- **Purpose**: Allow anyone to try the platform immediately without barriers while offering secure account creation for those who want persistent data
+- **Trigger**: App loads; user visits login page
+- **Progression**: User visits app → Login page displayed → Click "Try Demo Mode" for instant access OR Enter email/password to create account → Access platform → Data persists in browser storage → Sign out to clear session
+- **Success criteria**: Demo mode accessible with single click; no authentication barriers for exploration; accounts can be created easily; data persists between sessions; clear indication of demo vs. authenticated mode
 
 ## Essential Features
 
