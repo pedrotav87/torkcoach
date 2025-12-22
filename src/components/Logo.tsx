@@ -1,15 +1,15 @@
 import { cn } from '@/lib/utils'
 
 interface LogoProps {
-  className?: string
-  size?: 'sm' | 'md' | 'lg' | 'xl'
-}
+  size?: 'sm' | 'md'
 
-const sizeMap = {
-  sm: 'h-8',
-  md: 'h-10',
+}onst sizeMap = {
+
   lg: 'h-16',
   xl: 'h-20'
+}
+
+export function Logo({ className, size = 'md' }: LogoProps) {
 }
 
 export function Logo({ className, size = 'md' }: LogoProps) {
@@ -19,7 +19,4 @@ export function Logo({ className, size = 'md' }: LogoProps) {
     <img 
       src={logoSrc}
       alt="Tork Coach Logo"
-      className={cn(sizeMap[size], 'w-auto object-contain', className)}
-    />
-  )
 }
