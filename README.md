@@ -5,6 +5,8 @@ A comprehensive bodybuilding coaching CRM platform built with React, TypeScript,
 ## 🚀 Features
 
 - **Firebase Authentication** - Secure email/password authentication with role-based access control
+- **Cloud Sync** - Automatic data sync to Firebase with manual sync controls
+- **External Data Access** - Access your data via REST API, Admin SDK, or Firebase Console
 - **Client Management** - Comprehensive client profiles with progress tracking and analytics
 - **Workout Programming** - Create and manage training programs with templates and exercise database
 - **Nutrition Planning** - Meal plan templates, recipe library, and macro tracking
@@ -45,6 +47,28 @@ Choose the guide that fits your experience level:
 - **🚀 [FIREBASE_QUICK_CONFIG.md](./FIREBASE_QUICK_CONFIG.md)** - Visual quick reference (7 min)
 - **📘 [QUICKSTART.md](./QUICKSTART.md)** - Step-by-step tutorial (10 min)
 - **📚 [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)** - Complete documentation
+- **☁️ [FIREBASE_SYNC_GUIDE.md](./FIREBASE_SYNC_GUIDE.md)** - Enable cloud sync and external access
+
+### Cloud Data Sync
+
+The app automatically syncs data to Firebase Firestore when configured:
+- Real-time backup of all client data
+- Access data from external applications
+- Multi-device sync support
+- Manual sync controls in the UI
+
+**Using the Sync Feature:**
+1. Click the cloud icon in the header
+2. View sync status and data counts
+3. Manually trigger sync or load from cloud
+
+**External Data Access:**
+- Via Firebase Console (web UI)
+- REST API with authentication
+- Firebase Admin SDK (Node.js, Python)
+- Export to JSON/CSV
+
+See [EXTERNAL_DATA_ACCESS.md](./EXTERNAL_DATA_ACCESS.md) for complete guide.
 
 ### Demo Mode
 
@@ -235,6 +259,8 @@ MIT License - See LICENSE file for details
 - [QUICKSTART.md](./QUICKSTART.md) - 10-minute setup guide for beginners
 - [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) - Detailed Firebase setup guide
 - [FIREBASE_QUICK_CONFIG.md](./FIREBASE_QUICK_CONFIG.md) - Visual Firebase quick reference
+- [FIREBASE_SYNC_GUIDE.md](./FIREBASE_SYNC_GUIDE.md) - Cloud sync setup and usage
+- [EXTERNAL_DATA_ACCESS.md](./EXTERNAL_DATA_ACCESS.md) - Access data externally via API
 
 ### Deployment
 - [QUICK_DEPLOY.md](./QUICK_DEPLOY.md) - 3-step GitHub Pages deployment

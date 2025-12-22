@@ -14,6 +14,7 @@ import { AnalyticsPage } from '@/components/pages/AnalyticsPage'
 import { TrainerProfilePage } from '@/components/pages/TrainerProfilePage'
 import { LoginPage } from '@/components/auth/LoginPage'
 import { Logo } from '@/components/Logo'
+import { SyncStatus } from '@/components/SyncStatus'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -280,6 +281,8 @@ function App() {
           </div>
           
           <div className="flex items-center gap-2 sm:gap-4">
+            <SyncStatus />
+            
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="w-5 h-5" />
               {unreadNotifications > 0 && (
