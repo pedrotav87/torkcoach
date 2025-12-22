@@ -1,15 +1,16 @@
 import { initializeApp, getApps } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
+import { getAnalytics } from 'firebase/analytics'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyDemoKeyForLocalDevelopment123456789',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'demo-tork-coach.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'demo-tork-coach',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'demo-tork-coach.appspot.com',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '123456789012',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:123456789012:web:abc123def456',
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyBTPK8YHJSIx0PbsCNlguAcv5QVaIWo9uI',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'tork-cafe5.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'tork-cafe5',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'tork-cafe5.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '533257019468',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:533257019468:web:3c42217c9f11537d5714e9',
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-8FRRRH3MHC'
 }
 
 let app
@@ -23,9 +24,20 @@ try {
 export const auth = getAuth(app)
 export const db = getFirestore(app)
 
+let analytics
+if (typeof window !== 'undefined' && firebaseConfig.measurementId) {
+  try {
+    analytics = getAnalytics(app)
+  } catch (error) {
+    console.warn('Analytics initialization skipped:', error)
+  }
+}
+
+export { analytics }
+
 export const isFirebaseConfigured = () => {
   return import.meta.env.VITE_FIREBASE_API_KEY && 
-    import.meta.env.VITE_FIREBASE_API_KEY !== 'AIzaSyDemoKeyForLocalDevelopment123456789'
+    import.meta.env.VITE_FIREBASE_API_KEY !== 'AIzaSyBTPK8YHJSIx0PbsCNlguAcv5QVaIWo9uI'
 }
 
 if (import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATOR === 'true') {
