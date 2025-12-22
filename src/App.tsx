@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
+import { useAuth } from '@/contexts/AuthContext'
 import { Client, Program, CheckIn, AIInsight, Notification, ActivityFeedItem, ActivityReaction, CheckInInsight } from '@/lib/types'
 import { ClientDashboard } from '@/components/ClientDashboard'
 import { ClientProfile } from '@/components/ClientProfile'
 import { CheckInAnalysis } from '@/components/CheckInAnalysis'
 import { MobileNav } from '@/components/MobileNav'
+import { LoginPage } from '@/components/auth/LoginPage'
+import { ClientsPage } from '@/components/pages/ClientsPage'
+import { ProgramsPage } from '@/components/pages/ProgramsPage'
+import { CheckInsPage } from '@/components/pages/CheckInsPage'
+import { MessagesPage } from '@/components/pages/MessagesPage'
+import { AnalyticsPage } from '@/components/pages/AnalyticsPage'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -16,16 +23,18 @@ import {
   ChatCircle, 
   ChartLine,
   Bell,
-  Sparkle
+  Sparkle,
+  SignOut
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { generateCheckInInsights } from '@/lib/helpers'
 import { generateDemoClients, generateDemoPrograms, generateDemoCheckIns, generateDemoActivities } from '@/lib/demoData'
 import { toast } from 'sonner'
 
-type View = 'dashboard' | 'client-profile' | 'check-in-review'
+type View = 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics' | 'client-profile' | 'check-in-review'
 
 function App() {
+  const { user, loading: authLoading, signOut, isCoach } = useAuth()
   const [clients, setClients] = useKV<Client[]>('clients', [])
   const [programs] = useKV<Program[]>('programs', [])
   const [checkIns, setCheckIns] = useKV<CheckIn[]>('check-ins', [])
@@ -70,6 +79,37 @@ function App() {
       setActivities(generateDemoActivities())
     }
   }, [safeClients.length])
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary flex items-center justify-center">
+            <Barbell className="w-8 h-8 text-primary-foreground animate-pulse" weight="bold" />
+          </div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return <LoginPage />
+  }
+
+  if (!isCoach) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+          <p className="text-muted-foreground mb-4">This portal is for coaches only. Please contact support if you believe this is an error.</p>
+          <Button onClick={() => signOut()}>
+            Sign Out
+          </Button>
+        </div>
+      </div>
+    )
+  }
   
   const handleClientSelect = (client: Client) => {
     setSelectedClient(client)
@@ -273,19 +313,17 @@ function App() {
             
             <div className="hidden sm:flex items-center gap-3 pl-4 border-l">
               <div className="text-right hidden md:block">
-                <div className="text-sm font-semibold">Coach Mike</div>
-                <div className="text-xs text-muted-foreground">Pro Account</div>
+                <div className="text-sm font-semibold">{user.user_metadata?.full_name || user.email}</div>
+                <div className="text-xs text-muted-foreground">Coach</div>
               </div>
-              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
-                MC
-              </div>
+              <Button variant="ghost" size="icon" onClick={() => signOut()}>
+                <SignOut className="w-5 h-5" />
+              </Button>
             </div>
             
-            <div className="sm:hidden">
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-xs">
-                MC
-              </div>
-            </div>
+            <Button variant="ghost" size="icon" className="sm:hidden" onClick={() => signOut()}>
+              <SignOut className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </header>
@@ -306,30 +344,45 @@ function App() {
               Dashboard
             </Button>
             
-            <Button variant="ghost" className="w-full justify-start">
-              <Users className="w-5 h-5 mr-3" />
+            <Button 
+              variant={currentView === 'clients' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => {
+                setCurrentView('clients')
+                setSelectedClient(null)
+                setSelectedCheckIn(null)
+              }}
+            >
+              <Users className="w-5 h-5 mr-3" weight={currentView === 'clients' ? 'fill' : 'regular'} />
               Clients
               <Badge variant="secondary" className="ml-auto">
                 {safeClients.length}
               </Badge>
             </Button>
             
-            <Button variant="ghost" className="w-full justify-start">
-              <Barbell className="w-5 h-5 mr-3" />
+            <Button 
+              variant={currentView === 'programs' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => {
+                setCurrentView('programs')
+                setSelectedClient(null)
+                setSelectedCheckIn(null)
+              }}
+            >
+              <Barbell className="w-5 h-5 mr-3" weight={currentView === 'programs' ? 'fill' : 'regular'} />
               Programs
             </Button>
             
             <Button 
-              variant="ghost" 
+              variant={currentView === 'check-ins' ? 'secondary' : 'ghost'} 
               className="w-full justify-start"
               onClick={() => {
-                const unreviewedCheckIns = safeCheckIns.filter(c => !c.coachReviewed)
-                if (unreviewedCheckIns.length > 0) {
-                  handleReviewCheckIn(unreviewedCheckIns[0])
-                }
+                setCurrentView('check-ins')
+                setSelectedClient(null)
+                setSelectedCheckIn(null)
               }}
             >
-              <ClipboardText className="w-5 h-5 mr-3" />
+              <ClipboardText className="w-5 h-5 mr-3" weight={currentView === 'check-ins' ? 'fill' : 'regular'} />
               Check-ins
               {safeCheckIns.filter(c => !c.coachReviewed).length > 0 && (
                 <Badge variant="destructive" className="ml-auto">
@@ -338,13 +391,29 @@ function App() {
               )}
             </Button>
             
-            <Button variant="ghost" className="w-full justify-start">
-              <ChatCircle className="w-5 h-5 mr-3" />
+            <Button 
+              variant={currentView === 'messages' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => {
+                setCurrentView('messages')
+                setSelectedClient(null)
+                setSelectedCheckIn(null)
+              }}
+            >
+              <ChatCircle className="w-5 h-5 mr-3" weight={currentView === 'messages' ? 'fill' : 'regular'} />
               Messages
             </Button>
             
-            <Button variant="ghost" className="w-full justify-start">
-              <ChartLine className="w-5 h-5 mr-3" />
+            <Button 
+              variant={currentView === 'analytics' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => {
+                setCurrentView('analytics')
+                setSelectedClient(null)
+                setSelectedCheckIn(null)
+              }}
+            >
+              <ChartLine className="w-5 h-5 mr-3" weight={currentView === 'analytics' ? 'fill' : 'regular'} />
               Analytics
             </Button>
           </nav>
@@ -376,6 +445,16 @@ function App() {
                 onReact={handleActivityReaction}
               />
             )}
+            
+            {currentView === 'clients' && <ClientsPage />}
+            
+            {currentView === 'programs' && <ProgramsPage />}
+            
+            {currentView === 'check-ins' && <CheckInsPage />}
+            
+            {currentView === 'messages' && <MessagesPage />}
+            
+            {currentView === 'analytics' && <AnalyticsPage />}
             
             {currentView === 'client-profile' && selectedClient && (
               <ClientProfile

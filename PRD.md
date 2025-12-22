@@ -1,6 +1,6 @@
 # Tork Coach - Planning Guide
 
-A comprehensive bodybuilding coaching CRM platform that empowers fitness coaches to manage clients, design hypertrophy-focused programs, track progress, and leverage AI-driven insights for optimized coaching at scale.
+A comprehensive bodybuilding coaching CRM platform that empowers fitness coaches to manage clients, design hypertrophy-focused programs, track progress, and leverage AI-driven insights for optimized coaching at scale. **Now featuring Supabase authentication and full page navigation for Clients, Programs (with Workouts, Nutrition, and Exercise Database subpages), Check-ins, Messages, and Analytics.**
 
 **Experience Qualities**: 
 1. **Professional & Authoritative** - The platform should feel like a sophisticated tool built by experts for experts, instilling confidence in both coaches and clients.
@@ -10,14 +10,30 @@ A comprehensive bodybuilding coaching CRM platform that empowers fitness coaches
 **Complexity Level**: Complex Application (advanced functionality, likely with multiple views)
 This is a multi-faceted CRM system with client management, workout programming, progress tracking, messaging, nutrition logging, AI coaching assistance, analytics dashboards, and workflow automation - requiring sophisticated state management and multiple interconnected feature areas.
 
+## Authentication & Security
+
+### Supabase Authentication
+- **Functionality**: Secure email/password authentication with Supabase, role-based access control (coaches only), protected routes, and session management
+- **Purpose**: Ensure only authorized coaches can access the platform while maintaining security best practices
+- **Trigger**: App loads; user attempts to access any route
+- **Progression**: User visits app → Login page displayed → Enter credentials → Authenticate with Supabase → Verify coach role → Access granted → Session persists → Auto-refresh tokens → Sign out to end session
+- **Success criteria**: All routes protected; unauthorized access blocked; coaches can sign up/in seamlessly; sessions persist securely; clear error messages for auth failures
+
 ## Essential Features
 
 ### Client Dashboard & Management
-- **Functionality**: Central hub displaying all active clients with key metrics (compliance rate, last check-in, program progress, alerts)
+- **Functionality**: Central hub displaying all active clients with key metrics (compliance rate, last check-in, program progress, alerts), plus activity feed showing real-time client achievements
 - **Purpose**: Gives coaches an at-a-glance view of their entire roster to prioritize attention and spot issues
 - **Trigger**: Landing page after login; accessible via main navigation
 - **Progression**: View client list → Filter/sort by status → Click client card → Navigate to detailed client profile
 - **Success criteria**: Coaches can identify which clients need attention within 5 seconds; all critical alerts are surfaced prominently
+
+### Clients Page
+- **Functionality**: Dedicated page for viewing all clients with search, filtering, and detailed client cards showing adherence metrics
+- **Purpose**: Centralized client management interface
+- **Trigger**: Click "Clients" in sidebar navigation
+- **Progression**: View all clients → Search/filter → Click client card → Navigate to detailed profile
+- **Success criteria**: Fast client lookup; clear visual indicators of client status; smooth navigation
 
 ### Client Profile System
 - **Functionality**: Comprehensive client profile with personal info, training history, goals, injuries, volume tolerance, nutrition habits, progress photos, body metrics, and timeline of all interactions
@@ -32,6 +48,55 @@ This is a multi-faceted CRM system with client management, workout programming, 
 - **Trigger**: From client profile or programs section, click "Create Program" or "Edit Program"
 - **Progression**: Select template or start blank → Add training days → Search and add exercises → Configure sets/reps/load → Add supersets/notes → Assign to client → Client receives in their app
 - **Success criteria**: Can create a full 4-week program in under 10 minutes; AI suggests exercise substitutions based on equipment/goals; client sees program immediately
+
+### Programs Page (with Sub-pages)
+- **Functionality**: Tabbed interface with three sub-pages: Workouts, Nutrition, and Exercise Database
+- **Purpose**: Unified program management for all aspects of coaching
+- **Trigger**: Click "Programs" in sidebar navigation
+- **Progression**: Land on Workouts tab → Browse templates and active programs → Switch to Nutrition for meal plans → Switch to Exercise Database to manage exercises
+- **Success criteria**: Seamless tab switching; all program resources in one location; quick access to templates and databases
+
+#### Workouts Sub-page
+- **Functionality**: Workout templates library, active client programs, program builder interface
+- **Purpose**: Manage training programs and templates
+- **Trigger**: Programs page → Workouts tab (default)
+- **Progression**: Browse templates → Select or create program → Assign to clients → Monitor active programs
+- **Success criteria**: Templates easily accessible; active programs clearly displayed
+
+#### Nutrition Sub-page
+- **Functionality**: Meal plan templates, recipe library, macro calculators, nutrition plans by goal
+- **Purpose**: Manage nutrition programs and resources
+- **Trigger**: Programs page → Nutrition tab
+- **Progression**: Browse meal plans → View recipes → Assign nutrition plan to client
+- **Success criteria**: Nutrition resources organized by goal; recipes searchable; macro targets clear
+
+#### Exercise Database Sub-page
+- **Functionality**: Searchable exercise library with filters, video demonstrations, custom exercise creation, categorized by muscle group and equipment
+- **Purpose**: Central repository for all exercises used in programming
+- **Trigger**: Programs page → Exercise Database tab
+- **Progression**: Search exercises → Filter by muscle/equipment → Add custom exercises → Add to programs
+- **Success criteria**: Fast search; comprehensive exercise info; easy custom exercise creation
+
+### Check-ins Page
+- **Functionality**: Dedicated page for reviewing pending and completed client check-ins
+- **Purpose**: Centralized check-in review workflow
+- **Trigger**: Click "Check-ins" in sidebar navigation
+- **Progression**: View pending check-ins → Click to review → Generate AI insights → Edit feedback → Send to client
+- **Success criteria**: Clear separation of pending vs completed; quick access to review interface
+
+### Messages Page
+- **Functionality**: Full messaging interface with conversation list and message thread view
+- **Purpose**: Communicate with clients via text, voice notes, and media
+- **Trigger**: Click "Messages" in sidebar navigation
+- **Progression**: View conversation list → Select client → Read message history → Compose and send message
+- **Success criteria**: Real-time message updates; unread indicators; smooth conversation flow
+
+### Analytics Page
+- **Functionality**: Dashboard with key metrics, performance charts, client adherence trends, and top performers
+- **Purpose**: High-level overview of coaching business and client performance
+- **Trigger**: Click "Analytics" in sidebar navigation
+- **Progression**: View summary metrics → Drill into charts → Identify trends → Export reports
+- **Success criteria**: Metrics clearly visualized; trends easy to interpret; actionable insights surfaced
 
 ### AI Coaching Assistant
 - **Functionality**: Context-aware AI that analyzes client data (workout logs, check-ins, adherence, fatigue markers) and generates coaching recommendations, progression adjustments, and weekly summaries

@@ -13,10 +13,10 @@ import {
 } from '@phosphor-icons/react'
 
 interface MobileNavProps {
-  currentView: 'dashboard' | 'client-profile' | 'check-in-review'
+  currentView: 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics' | 'client-profile' | 'check-in-review'
   clientCount: number
   unreviewedCheckIns: number
-  onNavigate: (view: 'dashboard') => void
+  onNavigate: (view: 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics') => void
   onCheckInClick: () => void
 }
 
@@ -55,25 +55,33 @@ export function MobileNav({
               Dashboard
             </Button>
             
-            <Button variant="ghost" className="w-full justify-start">
-              <Users className="w-5 h-5 mr-3" />
+            <Button 
+              variant={currentView === 'clients' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => onNavigate('clients')}
+            >
+              <Users className="w-5 h-5 mr-3" weight={currentView === 'clients' ? 'fill' : 'regular'} />
               Clients
               <Badge variant="secondary" className="ml-auto">
                 {clientCount}
               </Badge>
             </Button>
             
-            <Button variant="ghost" className="w-full justify-start">
-              <Barbell className="w-5 h-5 mr-3" />
+            <Button 
+              variant={currentView === 'programs' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => onNavigate('programs')}
+            >
+              <Barbell className="w-5 h-5 mr-3" weight={currentView === 'programs' ? 'fill' : 'regular'} />
               Programs
             </Button>
             
             <Button 
-              variant="ghost" 
+              variant={currentView === 'check-ins' ? 'secondary' : 'ghost'} 
               className="w-full justify-start"
-              onClick={onCheckInClick}
+              onClick={() => onNavigate('check-ins')}
             >
-              <ClipboardText className="w-5 h-5 mr-3" />
+              <ClipboardText className="w-5 h-5 mr-3" weight={currentView === 'check-ins' ? 'fill' : 'regular'} />
               Check-ins
               {unreviewedCheckIns > 0 && (
                 <Badge variant="destructive" className="ml-auto">
@@ -82,13 +90,21 @@ export function MobileNav({
               )}
             </Button>
             
-            <Button variant="ghost" className="w-full justify-start">
-              <ChatCircle className="w-5 h-5 mr-3" />
+            <Button 
+              variant={currentView === 'messages' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => onNavigate('messages')}
+            >
+              <ChatCircle className="w-5 h-5 mr-3" weight={currentView === 'messages' ? 'fill' : 'regular'} />
               Messages
             </Button>
             
-            <Button variant="ghost" className="w-full justify-start">
-              <ChartLine className="w-5 h-5 mr-3" />
+            <Button 
+              variant={currentView === 'analytics' ? 'secondary' : 'ghost'} 
+              className="w-full justify-start"
+              onClick={() => onNavigate('analytics')}
+            >
+              <ChartLine className="w-5 h-5 mr-3" weight={currentView === 'analytics' ? 'fill' : 'regular'} />
               Analytics
             </Button>
           </nav>
