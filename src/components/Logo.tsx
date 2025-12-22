@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 
 interface LogoProps {
   className?: string
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+
 }
 
 const sizeMap = {
@@ -21,5 +21,5 @@ export function Logo({ className, size = 'md' }: LogoProps) {
       alt="Tork Coach Logo"
       className={cn(sizeMap[size], 'w-auto object-contain', className)}
     />
-  )
-}
+
+
