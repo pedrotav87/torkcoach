@@ -173,9 +173,17 @@ export interface CheckIn {
   coachReviewed: boolean
   
   aiSummary?: string
+  aiInsights?: CheckInInsight[]
   
   createdAt: string
   reviewedAt?: string
+}
+
+export interface CheckInInsight {
+  id: string
+  type: 'observation' | 'recommendation' | 'concern' | 'positive'
+  text: string
+  editable?: boolean
 }
 
 export interface ProgressPhoto {
@@ -286,6 +294,30 @@ export interface Notification {
   
   read: boolean
   
+  createdAt: string
+}
+
+export interface ActivityFeedItem {
+  id: string
+  clientId: string
+  clientName: string
+  clientAvatar?: string
+  type: 'workout-complete' | 'meal-logged' | 'pr-beaten' | 'progression-overload' | 'check-in-submitted' | 'milestone'
+  
+  title: string
+  description: string
+  metadata?: Record<string, any>
+  
+  reactions: ActivityReaction[]
+  
+  createdAt: string
+}
+
+export interface ActivityReaction {
+  id: string
+  type: 'kudos' | 'fire' | 'strong' | 'message'
+  message?: string
+  coachName: string
   createdAt: string
 }
 

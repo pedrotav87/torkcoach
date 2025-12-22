@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useKV } from '@github/spark/hooks'
-import { Client, Program, CheckIn, AIInsight, Notification } from '@/lib/types'
+import { Client, Program, CheckIn, AIInsight, Notification, ActivityFeedItem, ActivityReaction, CheckInInsight } from '@/lib/types'
 import { ClientDashboard } from '@/components/ClientDashboard'
 import { ClientProfile } from '@/components/ClientProfile'
+import { CheckInAnalysis } from '@/components/CheckInAnalysis'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { 
   House, 
   Users, 
@@ -16,29 +18,57 @@ import {
   Sparkle
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
-import { generateAIPromptForCheckIn, generateAIPromptForProgramReview } from '@/lib/helpers'
+import { generateCheckInInsights } from '@/lib/helpers'
+import { generateDemoClients, generateDemoPrograms, generateDemoCheckIns, generateDemoActivities } from '@/lib/demoData'
 import { toast } from 'sonner'
 
-type View = 'dashboard' | 'client-profile'
+type View = 'dashboard' | 'client-profile' | 'check-in-review'
 
 function App() {
-  const [clients] = useKV<Client[]>('clients', [])
+  const [clients, setClients] = useKV<Client[]>('clients', [])
   const [programs] = useKV<Program[]>('programs', [])
-  const [checkIns] = useKV<CheckIn[]>('check-ins', [])
+  const [checkIns, setCheckIns] = useKV<CheckIn[]>('check-ins', [])
   const [insights, setInsights] = useKV<AIInsight[]>('insights', [])
   const [notifications] = useKV<Notification[]>('notifications', [])
+  const [activities, setActivities] = useKV<ActivityFeedItem[]>('activities', [])
   
   const safeClients = clients || []
   const safePrograms = programs || []
   const safeCheckIns = checkIns || []
   const safeInsights = insights || []
   const safeNotifications = notifications || []
+  const safeActivities = activities || []
   
   const [currentView, setCurrentView] = useState<View>('dashboard')
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [selectedCheckIn, setSelectedCheckIn] = useState<CheckIn | null>(null)
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false)
   
   const unreadNotifications = safeNotifications.filter(n => !n.read).length
+  
+  useEffect(() => {
+    if (safeClients.length === 0) {
+      setClients(generateDemoClients())
+    }
+  }, [])
+  
+  useEffect(() => {
+    if (safePrograms.length === 0 && safeClients.length > 0) {
+      setClients(generateDemoClients())
+    }
+  }, [safeClients.length])
+  
+  useEffect(() => {
+    if (safeCheckIns.length === 0 && safeClients.length > 0) {
+      setCheckIns(generateDemoCheckIns())
+    }
+  }, [safeClients.length])
+  
+  useEffect(() => {
+    if (safeActivities.length === 0 && safeClients.length > 0) {
+      setActivities(generateDemoActivities())
+    }
+  }, [safeClients.length])
   
   const handleClientSelect = (client: Client) => {
     setSelectedClient(client)
@@ -48,12 +78,90 @@ function App() {
   const handleBack = () => {
     setCurrentView('dashboard')
     setSelectedClient(null)
+    setSelectedCheckIn(null)
   }
   
   const handleCreateClient = () => {
     toast.info('Client creation coming soon', {
       description: 'This is a demo showcasing the platform architecture'
     })
+  }
+  
+  const handleReviewCheckIn = (checkIn: CheckIn) => {
+    const client = safeClients.find(c => c.id === checkIn.clientId)
+    if (client) {
+      setSelectedClient(client)
+      setSelectedCheckIn(checkIn)
+      setCurrentView('check-in-review')
+    }
+  }
+  
+  const handleGenerateCheckInInsights = async () => {
+    if (!selectedCheckIn || !selectedClient) return
+    
+    setIsGeneratingInsights(true)
+    try {
+      const generatedInsights = await generateCheckInInsights(selectedCheckIn, selectedClient)
+      
+      setCheckIns((current) => 
+        (current || []).map(ci => 
+          ci.id === selectedCheckIn.id 
+            ? { ...ci, aiInsights: generatedInsights }
+            : ci
+        )
+      )
+      
+      setSelectedCheckIn({ ...selectedCheckIn, aiInsights: generatedInsights })
+      
+      toast.success('AI insights generated', {
+        description: 'Review and edit before sending to client'
+      })
+    } catch (error) {
+      toast.error('Failed to generate insights', {
+        description: 'Please try again'
+      })
+    } finally {
+      setIsGeneratingInsights(false)
+    }
+  }
+  
+  const handleSaveCheckInFeedback = (insights: CheckInInsight[], feedback: string) => {
+    if (!selectedCheckIn) return
+    
+    setCheckIns((current) =>
+      (current || []).map(ci =>
+        ci.id === selectedCheckIn.id
+          ? {
+              ...ci,
+              aiInsights: insights,
+              coachFeedback: feedback,
+              coachReviewed: true,
+              reviewedAt: new Date().toISOString()
+            }
+          : ci
+      )
+    )
+    
+    setCurrentView('dashboard')
+    setSelectedCheckIn(null)
+  }
+  
+  const handleActivityReaction = (activityId: string, reactionType: ActivityReaction['type'], message?: string) => {
+    const newReaction: ActivityReaction = {
+      id: `reaction-${Date.now()}`,
+      type: reactionType,
+      message,
+      coachName: 'Coach Mike',
+      createdAt: new Date().toISOString()
+    }
+    
+    setActivities((current) =>
+      (current || []).map(activity =>
+        activity.id === activityId
+          ? { ...activity, reactions: [...activity.reactions, newReaction] }
+          : activity
+      )
+    )
   }
   
   const generateInsightsForClient = async (client: Client) => {
@@ -63,24 +171,28 @@ function App() {
       const clientCheckIns = safeCheckIns.filter(c => c.clientId === client.id)
       const latestCheckIn = clientCheckIns[0]
       
-      if (latestCheckIn && !latestCheckIn.aiSummary) {
-        const prompt = generateAIPromptForCheckIn(latestCheckIn, client)
-        const summary = await window.spark.llm(prompt, 'gpt-4o-mini')
+      if (latestCheckIn && !latestCheckIn.aiInsights) {
+        const generatedInsights = await generateCheckInInsights(latestCheckIn, client)
+        
+        setCheckIns((current) =>
+          (current || []).map(ci =>
+            ci.id === latestCheckIn.id
+              ? { ...ci, aiInsights: generatedInsights }
+              : ci
+          )
+        )
         
         toast.success('AI insights generated', {
           description: 'Check-in analysis complete'
         })
       }
       
-      const weeklyPrompt = generateAIPromptForProgramReview(client, client.adherence.workoutCompliance)
-      const weeklySummary = await window.spark.llm(weeklyPrompt, 'gpt-4o-mini')
-      
       const newInsight: AIInsight = {
         id: `insight-${Date.now()}`,
         clientId: client.id,
         type: 'adherence',
         title: 'Weekly Performance Summary',
-        summary: weeklySummary,
+        summary: 'Client is maintaining excellent adherence with consistent energy levels. Consider progressive overload in next training block.',
         recommendations: [
           'Continue current training volume',
           'Monitor recovery markers in next check-in',
@@ -164,6 +276,7 @@ function App() {
               onClick={() => {
                 setCurrentView('dashboard')
                 setSelectedClient(null)
+                setSelectedCheckIn(null)
               }}
             >
               <House className="w-5 h-5 mr-3" weight={currentView === 'dashboard' ? 'fill' : 'regular'} />
@@ -183,7 +296,16 @@ function App() {
               Programs
             </Button>
             
-            <Button variant="ghost" className="w-full justify-start">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start"
+              onClick={() => {
+                const unreviewedCheckIns = safeCheckIns.filter(c => !c.coachReviewed)
+                if (unreviewedCheckIns.length > 0) {
+                  handleReviewCheckIn(unreviewedCheckIns[0])
+                }
+              }}
+            >
               <ClipboardText className="w-5 h-5 mr-3" />
               Check-ins
               {safeCheckIns.filter(c => !c.coachReviewed).length > 0 && (
@@ -225,8 +347,10 @@ function App() {
             {currentView === 'dashboard' && (
               <ClientDashboard
                 clients={safeClients}
+                activities={safeActivities}
                 onClientSelect={handleClientSelect}
                 onCreateClient={handleCreateClient}
+                onReact={handleActivityReaction}
               />
             )}
             
@@ -240,9 +364,44 @@ function App() {
                 onGenerateInsights={() => generateInsightsForClient(selectedClient)}
               />
             )}
+            
+            {currentView === 'check-in-review' && selectedCheckIn && selectedClient && (
+              <div>
+                <Button variant="ghost" onClick={handleBack} className="mb-4">
+                  ← Back to Dashboard
+                </Button>
+                <CheckInAnalysis
+                  checkIn={selectedCheckIn}
+                  client={selectedClient}
+                  onSave={handleSaveCheckInFeedback}
+                  onGenerate={handleGenerateCheckInInsights}
+                />
+              </div>
+            )}
           </div>
         </main>
       </div>
+      
+      <Dialog open={isGeneratingInsights}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkle className="w-5 h-5 text-accent animate-pulse" weight="fill" />
+              Generating AI Insights...
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-accent/10 flex items-center justify-center">
+                <Sparkle className="w-8 h-8 text-accent animate-pulse" weight="fill" />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Analyzing check-in data and generating personalized insights...
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

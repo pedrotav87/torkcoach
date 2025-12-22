@@ -48,11 +48,18 @@ This is a multi-faceted CRM system with client management, workout programming, 
 - **Success criteria**: Coaches can visually demonstrate progress in client meetings; trends clearly show program effectiveness; red flags (plateaus, regression) are automatically highlighted
 
 ### Check-In System
-- **Functionality**: Customizable check-in forms (weekly surveys with questions about energy, hunger, adherence, photos, measurements, notes) that clients complete on schedule; coach review queue with AI-generated summaries
-- **Purpose**: Maintain consistent coach-client communication loop and capture qualitative + quantitative feedback
-- **Trigger**: Client receives automated reminder; coach navigates to "Check-Ins" queue
-- **Progression**: Client fills form → Uploads photos → Submits → Appears in coach queue with AI summary → Coach reviews, leaves feedback → Client sees response
-- **Success criteria**: 80%+ client completion rate; AI summaries accurately extract key points; coaches can process check-ins 3x faster
+- **Functionality**: Customizable check-in forms (weekly surveys with questions about energy, hunger, adherence, photos, measurements, notes) that clients complete on schedule; coach review queue with AI-generated insights that can be edited before sending; real-time analysis with editable recommendations
+- **Purpose**: Maintain consistent coach-client communication loop and capture qualitative + quantitative feedback with AI-assisted analysis
+- **Trigger**: Client receives automated reminder; coach navigates to "Check-Ins" queue or clicks notification
+- **Progression**: Client fills form → Uploads photos → Submits → Appears in coach queue → Coach clicks to review → AI generates insights (observations, recommendations, concerns, positive feedback) → Coach edits/adds/removes insights → Coach adds personal feedback → Sends to client → Client sees response
+- **Success criteria**: 80%+ client completion rate; AI insights are accurate and editable; coaches can process check-ins 3x faster; personalized feedback maintains coaching authenticity
+
+### Activity Feed & Coach Reactions
+- **Functionality**: Real-time activity feed displaying client achievements (workouts completed, meals logged, PRs beaten, progressive overload detected, milestones reached); coaches can react with kudos, fire, strong emojis or send encouraging messages directly from the feed
+- **Purpose**: Foster motivation and engagement by celebrating client wins and maintaining frequent touchpoints without requiring lengthy conversations
+- **Trigger**: Landing on dashboard; activities auto-populate from client actions
+- **Progression**: View activity feed → See client achievement → Click reaction button (kudos/fire/strong) for quick encouragement OR click message to write personalized note → Client receives notification with coach's reaction
+- **Success criteria**: Coaches respond to 50%+ of client achievements; clients feel consistently supported; average response time under 2 hours for significant achievements
 
 ### Workout Logging (Client View)
 - **Functionality**: Mobile-optimized interface where clients log each set (weight, reps, RPE, notes), view exercise demos, start rest timers, and see previous performance

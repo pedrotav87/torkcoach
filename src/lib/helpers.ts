@@ -94,6 +94,59 @@ Provide a concise 2-3 sentence coaching summary highlighting:
 Be supportive, specific, and focus on hypertrophy training principles.`
 }
 
+export async function generateCheckInInsights(checkIn: CheckIn, client: Client) {
+  const prompt = window.spark.llmPrompt`You are an expert bodybuilding coach analyzing a client check-in. Generate 3-5 specific, actionable insights.
+
+Client Profile:
+- Name: ${client.name}
+- Training Age: ${client.profile.trainingAge} years
+- Goals: ${client.profile.goals.join(', ')}
+- Weak Points: ${client.profile.weakPoints.join(', ')}
+- Volume Tolerance: ${client.profile.volumeTolerance}
+- Recovery Status: ${client.profile.recoveryStatus}
+
+Check-In Data:
+- Weight: ${checkIn.weight} lbs (Target: ${client.metrics.targetWeight} lbs)
+- Energy Level: ${checkIn.responses.energy}/10
+- Hunger Level: ${checkIn.responses.hunger}/10
+- Sleep Quality: ${checkIn.responses.sleep}/10
+- Stress Level: ${checkIn.responses.stress}/10
+- Training Adherence: ${checkIn.responses.adherence}/10
+- Enjoyment: ${checkIn.responses.enjoyment}/10
+
+Client Notes: ${checkIn.notes || 'None provided'}
+
+Return a JSON object with an "insights" property containing an array of insight objects. Each insight should have:
+- "type": one of "observation", "recommendation", "concern", or "positive"
+- "text": a clear, specific, actionable statement (1-2 sentences max)
+
+Focus on:
+1. Recovery markers (sleep, energy, stress)
+2. Adherence patterns
+3. Weight progression relative to goals
+4. Training enjoyment and sustainability
+5. Specific recommendations for next week
+
+Example format:
+{
+  "insights": [
+    {"type": "positive", "text": "Excellent training adherence this week shows strong commitment to the program."},
+    {"type": "concern", "text": "Sleep averaging below 7/10 may be limiting recovery - consider earlier bedtime or stress management techniques."},
+    {"type": "recommendation", "text": "With energy levels high, this is an ideal time to add 1-2 sets per muscle group to push progressive overload."}
+  ]
+}`
+
+  const response = await window.spark.llm(prompt, 'gpt-4o-mini', true)
+  const data = JSON.parse(response)
+  
+  return data.insights.map((insight: any, index: number) => ({
+    id: `insight-${Date.now()}-${index}`,
+    type: insight.type,
+    text: insight.text,
+    editable: true
+  }))
+}
+
 export function generateAIPromptForProgression(client: Client, recentWorkouts: WorkoutLog[]): string {
   const volumeLoad = calculateVolumeLoad(recentWorkouts)
   const completionRate = calculateAdherence(
