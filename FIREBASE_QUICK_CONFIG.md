@@ -1,19 +1,19 @@
 # Firebase Configuration - Quick Reference
 
-## 🔥 What You Need
-
-1. **Firebase Account** (free) - [console.firebase.google.com](https://console.firebase.google.com)
-2. **6 Configuration Values** - From your Firebase project settings
-3. **`.env` File** - Created in your project root
+1. **Firebase Accou
 
 ## ⚡ 3-Step Setup
-
 ### Step 1: Create Firebase Project (2 minutes)
+1. Go to [Firebase Console](https://console.fireb
 
-1. Go to [Firebase Console](https://console.firebase.google.com)
-2. Click **"Add project"**
-3. Name it (e.g., "Tork Coach")
-4. Click through the wizard → **"Create project"**
+
+
+1. Click **"Authentication"** in sidebar
+
+
+1. Click **"Firestore Data
+3. Choose **"Production mode"**
+
 
 ### Step 2: Enable Services (3 minutes)
 
@@ -38,23 +38,23 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function isAuth() {
-      return request.auth != null;
+
     }
-    
+**Ge
     function isCoach() {
-      return isAuth() && 
+3. Click **</>** (web ico
         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['coach', 'admin'];
-    }
+
     
     match /users/{userId} {
       allow read, write: if isAuth() && request.auth.uid == userId;
-    }
+VITE_
     
-    match /{collection}/{document=**} {
+VITE_FIREBASE_STORAGE_BUCKET=
       allow read, write: if isCoach();
-    }
+```
   }
-}
+
 ```
 
 3. Click **"Publish"**
@@ -72,23 +72,23 @@ service cloud.firestore {
 1. In your project root, create a file named `.env`
 2. Copy this template:
 
-```env
+- [ ] 
 VITE_FIREBASE_API_KEY=
-VITE_FIREBASE_AUTH_DOMAIN=
+
 VITE_FIREBASE_PROJECT_ID=
 VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
-VITE_FIREBASE_APP_ID=
+| `VITE_FIREBASE_STOR
 ```
 
 3. Fill in each value from your Firebase config (after the `=` sign)
 
 **Example of filled `.env`:**
-```env
+4. **E
 VITE_FIREBASE_API_KEY=AIzaSyAbc123def456ghi789jkl012mno345pqr
 VITE_FIREBASE_AUTH_DOMAIN=tork-coach-prod.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=tork-coach-prod
-VITE_FIREBASE_STORAGE_BUCKET=tork-coach-prod.appspot.com
+✅ Verify `.env` file exists in project root (same level 
 VITE_FIREBASE_MESSAGING_SENDER_ID=987654321098
 VITE_FIREBASE_APP_ID=1:987654321098:web:abc123def456
 ```
@@ -96,15 +96,15 @@ VITE_FIREBASE_APP_ID=1:987654321098:web:abc123def456
 ## 🚀 Start the App
 
 ```bash
-npm install
+
 npm run dev
-```
+You
 
 Navigate to `http://localhost:5173` and create your account!
 
-## ✅ Checklist
 
-- [ ] Firebase project created
+
+- **Architecture:** [ARCHITECT
 - [ ] Email/Password authentication enabled
 - [ ] Firestore database created
 - [ ] Security rules published
@@ -130,36 +130,36 @@ Navigate to `http://localhost:5173` and create your account!
 4. **Extra spaces or quotes** → Copy values exactly, no quotes needed
 5. **Wrong API key** → Double-check you copied from correct project
 
-## 🆘 Troubleshooting
 
-### "Firebase not configured" message
+
+
 ✅ Verify `.env` file exists in project root (same level as `package.json`)  
 ✅ All 6 variables are filled in  
 ✅ Restart dev server with `npm run dev`
 
 ### "Authentication failed" error
-✅ Email/Password auth is enabled in Firebase Console  
-✅ Check API key is correct  
-✅ Try creating new account instead of signing in
 
-### "Permission denied" in app
-✅ Firestore security rules are published  
-✅ User account has `role: "coach"` in Firestore `users` collection
 
-## 🔒 Security Note
 
-Your Firebase API key is **safe to expose in frontend code**. Firebase security is enforced by:
-- Authentication (users must sign in)
-- Firestore Security Rules (control what users can access)
-- Your `.env` file should still be in `.gitignore` to keep config organized
 
-## 📚 More Help
 
-- **Quick Start:** [QUICKSTART.md](./QUICKSTART.md)
-- **Full Setup Guide:** [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
-- **Architecture:** [ARCHITECTURE.md](./ARCHITECTURE.md)
-- **Firebase Docs:** [firebase.google.com/docs](https://firebase.google.com/docs)
 
----
 
-**Total Setup Time: ~7 minutes** ⏱️
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
