@@ -5,6 +5,7 @@ import { defineConfig, PluginOption } from "vite";
 import sparkPlugin from "@github/spark/spark-vite-plugin";
 import createIconImportProxy from "@github/spark/vitePhosphorIconProxyPlugin";
 import { resolve } from 'path'
+import { copyFileSync, existsSync } from 'fs'
 
 const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
 
@@ -17,6 +18,21 @@ export default defineConfig({
     // DO NOT REMOVE
     createIconImportProxy() as PluginOption,
     sparkPlugin() as PluginOption,
+    {
+      name: 'copy-cname',
+      closeBundle() {
+        const cnamePath = resolve(projectRoot, 'CNAME')
+        const distCnamePath = resolve(projectRoot, 'dist', 'CNAME')
+        if (existsSync(cnamePath)) {
+          try {
+            copyFileSync(cnamePath, distCnamePath)
+            console.log('✓ CNAME file copied to dist/')
+          } catch (error) {
+            console.warn('⚠ CNAME copy failed:', error)
+          }
+        }
+      }
+    } as PluginOption,
   ],
   resolve: {
     alias: {
