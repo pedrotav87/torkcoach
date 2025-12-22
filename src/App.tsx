@@ -313,7 +313,7 @@ function App() {
             
             <div className="hidden sm:flex items-center gap-3 pl-4 border-l">
               <div className="text-right hidden md:block">
-                <div className="text-sm font-semibold">{user.user_metadata?.full_name || user.email}</div>
+                <div className="text-sm font-semibold">{user.displayName || user.email}</div>
                 <div className="text-xs text-muted-foreground">Coach</div>
               </div>
               <Button variant="ghost" size="icon" onClick={() => signOut()}>

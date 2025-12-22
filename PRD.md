@@ -1,6 +1,6 @@
 # Tork Coach - Planning Guide
 
-A comprehensive bodybuilding coaching CRM platform that empowers fitness coaches to manage clients, design hypertrophy-focused programs, track progress, and leverage AI-driven insights for optimized coaching at scale. **Now featuring Supabase authentication and full page navigation for Clients, Programs (with Workouts, Nutrition, and Exercise Database subpages), Check-ins, Messages, and Analytics.**
+A comprehensive bodybuilding coaching CRM platform that empowers fitness coaches to manage clients, design hypertrophy-focused programs, track progress, and leverage AI-driven insights for optimized coaching at scale. **Now featuring Firebase authentication and full page navigation for Clients, Programs (with Workouts, Nutrition, and Exercise Database subpages), Check-ins, Messages, and Analytics.**
 
 **Experience Qualities**: 
 1. **Professional & Authoritative** - The platform should feel like a sophisticated tool built by experts for experts, instilling confidence in both coaches and clients.
@@ -12,11 +12,11 @@ This is a multi-faceted CRM system with client management, workout programming, 
 
 ## Authentication & Security
 
-### Supabase Authentication
-- **Functionality**: Secure email/password authentication with Supabase, role-based access control (coaches only), protected routes, and session management
+### Firebase Authentication
+- **Functionality**: Secure email/password authentication with Firebase, role-based access control (coaches only), protected routes, and session management
 - **Purpose**: Ensure only authorized coaches can access the platform while maintaining security best practices
 - **Trigger**: App loads; user attempts to access any route
-- **Progression**: User visits app → Login page displayed → Enter credentials → Authenticate with Supabase → Verify coach role → Access granted → Session persists → Auto-refresh tokens → Sign out to end session
+- **Progression**: User visits app → Login page displayed → Enter credentials → Authenticate with Firebase → Verify coach role in Firestore → Access granted → Session persists → Auto-refresh tokens → Sign out to end session
 - **Success criteria**: All routes protected; unauthorized access blocked; coaches can sign up/in seamlessly; sessions persist securely; clear error messages for auth failures
 
 ## Essential Features

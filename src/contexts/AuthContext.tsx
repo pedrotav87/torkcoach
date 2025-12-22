@@ -1,13 +1,20 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User, Session, AuthError } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { 
+  User, 
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  updateProfile
+} from 'firebase/auth'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase'
 
 interface AuthContextType {
   user: User | null
-  session: Session | null
   loading: boolean
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>
-  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{ error: AuthError | null }>
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>
+  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   isCoach: boolean
 }
@@ -28,52 +35,71 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null)
-  const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [isCoach, setIsCoach] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setUser(session?.user ?? null)
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser)
+      
+      if (firebaseUser) {
+        const userDocRef = doc(db, 'users', firebaseUser.uid)
+        const userDoc = await getDoc(userDocRef)
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data()
+          setIsCoach(userData.role === 'coach' || userData.role === 'admin')
+        } else {
+          setIsCoach(false)
+        }
+      } else {
+        setIsCoach(false)
+      }
+      
       setLoading(false)
     })
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
-
-    return () => subscription.unsubscribe()
+    return () => unsubscribe()
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error }
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+      return { error: null }
+    } catch (error) {
+      return { error: error as Error }
+    }
   }
 
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: metadata
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
+      
+      if (metadata?.displayName) {
+        await updateProfile(user, { displayName: metadata.displayName })
       }
-    })
-    return { error }
+      
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        displayName: metadata?.displayName || '',
+        role: metadata?.role || 'coach',
+        createdAt: new Date().toISOString(),
+        ...metadata
+      })
+      
+      return { error: null }
+    } catch (error) {
+      return { error: error as Error }
+    }
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    await firebaseSignOut(auth)
   }
-
-  const isCoach = user?.user_metadata?.role === 'coach' || user?.user_metadata?.role === 'admin'
 
   const value = {
     user,
-    session,
     loading,
     signIn,
     signUp,
