@@ -12,6 +12,7 @@ import { ProgramsPage } from '@/components/pages/ProgramsPage'
 import { CheckInsPage } from '@/components/pages/CheckInsPage'
 import { MessagesPage } from '@/components/pages/MessagesPage'
 import { AnalyticsPage } from '@/components/pages/AnalyticsPage'
+import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -293,12 +294,7 @@ function App() {
                 }
               }}
             />
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <Barbell className="w-5 h-5 text-primary-foreground" weight="bold" />
-              </div>
-              <span className="text-lg sm:text-xl font-bold">Tork Coach</span>
-            </div>
+            <Logo size="md" className="ml-2" />
           </div>
           
           <div className="flex items-center gap-2 sm:gap-4">

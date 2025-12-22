@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Barbell, Spinner } from '@phosphor-icons/react'
+import { Logo } from '@/components/Logo'
+import { Spinner } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 export const LoginPage = () => {
@@ -51,10 +52,9 @@ export const LoginPage = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary mb-4">
-            <Barbell className="w-8 h-8 text-primary-foreground" weight="bold" />
+          <div className="flex justify-center mb-4">
+            <Logo size="xl" />
           </div>
-          <h1 className="text-3xl font-bold mb-2">Tork Coach</h1>
           <p className="text-muted-foreground">Professional Bodybuilding CRM Platform</p>
         </div>
 

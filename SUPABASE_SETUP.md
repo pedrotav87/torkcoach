@@ -1,33 +1,12 @@
-# Tork Coach - Supabase Authentication Setup
+# Tork Coach - Authentication
 
-## Quick Setup Instructions
+## Authentication Provider
 
-### 1. Create a Supabase Project
+This application uses **Firebase Authentication** for user management and authentication.
 
-1. Go to [https://supabase.com](https://supabase.com) and create a free account
-2. Click "New Project"
-3. Fill in your project details:
-   - **Name**: `tork-coach` (or your preferred name)
-   - **Database Password**: Create a strong password (save this securely)
-   - **Region**: Choose the region closest to you
-4. Wait for the project to be provisioned (usually 1-2 minutes)
+Supabase has been removed from this project.
 
-### 2. Get Your Supabase Credentials
-
-1. In your Supabase project dashboard, click on the "Settings" icon (gear) in the sidebar
-2. Navigate to **API** settings
-3. You'll find two important values:
-   - **Project URL** (e.g., `https://xxxxx.supabase.co`)
-   - **anon/public key** (a long JWT token starting with `eyJ...`)
-
-### 3. Configure Environment Variables
-
-1. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Edit `.env` and replace with your actual values:
+For Firebase setup instructions, please see [FIREBASE_SETUP.md](./FIREBASE_SETUP.md).
    ```
    VITE_SUPABASE_URL=https://your-project.supabase.co
    VITE_SUPABASE_ANON_KEY=your_actual_anon_key_here
