@@ -55,6 +55,7 @@ function App() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const [selectedCheckIn, setSelectedCheckIn] = useState<CheckIn | null>(null)
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false)
   
   const unreadNotifications = safeNotifications.filter(n => !n.read).length
   
@@ -62,33 +63,24 @@ function App() {
     if (!authLoading && !user) {
       enterDemoMode()
     }
-  }, [authLoading, user])
+  }, [authLoading, user, enterDemoMode])
   
   useEffect(() => {
-    if (safeClients.length === 0) {
-      setClients(generateDemoClients())
+    if (user && !isInitialized) {
+      if (safeClients.length === 0) {
+        setClients(generateDemoClients())
+      }
+      if (safeCheckIns.length === 0) {
+        setCheckIns(generateDemoCheckIns())
+      }
+      if (safeActivities.length === 0) {
+        setActivities(generateDemoActivities())
+      }
+      setIsInitialized(true)
     }
-  }, [])
-  
-  useEffect(() => {
-    if (safePrograms.length === 0 && safeClients.length > 0) {
-      setClients(generateDemoClients())
-    }
-  }, [safeClients.length])
-  
-  useEffect(() => {
-    if (safeCheckIns.length === 0 && safeClients.length > 0) {
-      setCheckIns(generateDemoCheckIns())
-    }
-  }, [safeClients.length])
-  
-  useEffect(() => {
-    if (safeActivities.length === 0 && safeClients.length > 0) {
-      setActivities(generateDemoActivities())
-    }
-  }, [safeClients.length])
+  }, [user, isInitialized, safeClients.length, safeCheckIns.length, safeActivities.length, setClients, setCheckIns, setActivities])
 
-  if (authLoading || !user) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -96,6 +88,19 @@ function App() {
             <Barbell className="w-8 h-8 text-primary-foreground animate-pulse" weight="bold" />
           </div>
           <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary flex items-center justify-center">
+            <Barbell className="w-8 h-8 text-primary-foreground animate-pulse" weight="bold" />
+          </div>
+          <p className="text-muted-foreground">Initializing demo mode...</p>
         </div>
       </div>
     )
