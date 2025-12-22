@@ -6,7 +6,6 @@ import { ClientDashboard } from '@/components/ClientDashboard'
 import { ClientProfile } from '@/components/ClientProfile'
 import { CheckInAnalysis } from '@/components/CheckInAnalysis'
 import { MobileNav } from '@/components/MobileNav'
-import { LoginPage } from '@/components/auth/LoginPage'
 import { ClientsPage } from '@/components/pages/ClientsPage'
 import { ProgramsPage } from '@/components/pages/ProgramsPage'
 import { CheckInsPage } from '@/components/pages/CheckInsPage'
@@ -35,7 +34,7 @@ import { toast } from 'sonner'
 type View = 'dashboard' | 'clients' | 'programs' | 'check-ins' | 'messages' | 'analytics' | 'client-profile' | 'check-in-review'
 
 function App() {
-  const { user, loading: authLoading, signOut, isCoach } = useAuth()
+  const { user, loading: authLoading, signOut, isCoach, enterDemoMode } = useAuth()
   const [clients, setClients] = useKV<Client[]>('clients', [])
   const [programs] = useKV<Program[]>('programs', [])
   const [checkIns, setCheckIns] = useKV<CheckIn[]>('check-ins', [])
@@ -56,6 +55,12 @@ function App() {
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false)
   
   const unreadNotifications = safeNotifications.filter(n => !n.read).length
+  
+  useEffect(() => {
+    if (!authLoading && !user) {
+      enterDemoMode()
+    }
+  }, [authLoading, user])
   
   useEffect(() => {
     if (safeClients.length === 0) {
@@ -81,7 +86,7 @@ function App() {
     }
   }, [safeClients.length])
 
-  if (authLoading) {
+  if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -89,24 +94,6 @@ function App() {
             <Barbell className="w-8 h-8 text-primary-foreground animate-pulse" weight="bold" />
           </div>
           <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return <LoginPage />
-  }
-
-  if (!isCoach) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-          <p className="text-muted-foreground mb-4">This portal is for coaches only. Please contact support if you believe this is an error.</p>
-          <Button onClick={() => signOut()}>
-            Sign Out
-          </Button>
         </div>
       </div>
     )
