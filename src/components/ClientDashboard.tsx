@@ -3,7 +3,6 @@ import { ClientCard } from '@/components/ClientCard'
 import { ActivityFeed } from '@/components/ActivityFeed'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Plus, MagnifyingGlass, Faders, Rss, Users } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
@@ -19,7 +18,6 @@ interface ClientDashboardProps {
 export function ClientDashboard({ clients, activities, onClientSelect, onCreateClient, onReact }: ClientDashboardProps) {
   const [filter, setFilter] = useState<DashboardFilter>('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'clients' | 'activity'>('activity')
   
   const filteredClients = clients.filter(client => {
     const matchesFilter = filter === 'all' || client.status === filter
@@ -51,29 +49,29 @@ export function ClientDashboard({ clients, activities, onClientSelect, onCreateC
           Add Client
         </Button>
       </div>
-      
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'clients' | 'activity')} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="activity">
-            <Rss className="w-4 h-4 mr-2" weight="bold" />
-            Activity Feed
-          </TabsTrigger>
-          <TabsTrigger value="clients">
-            <Users className="w-4 h-4 mr-2" weight="bold" />
-            All Clients
-          </TabsTrigger>
-        </TabsList>
 
-        <TabsContent value="activity" className="space-y-4 mt-6">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-            <Rss className="w-4 h-4" />
-            <span>Recent client activity and achievements</span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Rss className="w-5 h-5 text-accent" weight="bold" />
+            <h2 className="text-xl font-bold">Activity Feed</h2>
           </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Recent client activity and achievements
+          </p>
           
           <ActivityFeed activities={activities} onReact={onReact} />
-        </TabsContent>
+        </div>
 
-        <TabsContent value="clients" className="space-y-4 mt-6">
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Users className="w-5 h-5 text-primary" weight="bold" />
+            <h2 className="text-xl font-bold">All Clients</h2>
+            <Badge variant="secondary" className="ml-auto">
+              {clients.length}
+            </Badge>
+          </div>
+
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
               <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -112,7 +110,7 @@ export function ClientDashboard({ clients, activities, onClientSelect, onCreateC
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-4">
               {filteredClients.map((client) => (
                 <ClientCard
                   key={client.id}
@@ -122,8 +120,8 @@ export function ClientDashboard({ clients, activities, onClientSelect, onCreateC
               ))}
             </div>
           )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   )
 }

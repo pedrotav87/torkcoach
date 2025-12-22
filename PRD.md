@@ -1,4 +1,4 @@
-# Planning Guide
+# Tork Coach - Planning Guide
 
 A comprehensive bodybuilding coaching CRM platform that empowers fitness coaches to manage clients, design hypertrophy-focused programs, track progress, and leverage AI-driven insights for optimized coaching at scale.
 
@@ -212,3 +212,112 @@ Animations should feel **responsive and purposeful**, reinforcing user actions a
 - **Navigation**: Breadcrumbs become back button; overflow menus consolidate actions; swipe gestures for navigation
 - **Photos**: Full-width comparison slider; pinch-to-zoom enabled; landscape orientation encouraged
 - **Set Logging**: Optimized keyboard-first interface; quick-add buttons for common weight increments; auto-advance after RPE selection
+
+## Security Best Practices - Mandatory Requirements
+
+### 1. Authentication & Authorization
+- **Use managed authentication provider** - No custom authentication implementations; leverage established providers (Auth0, Clerk, Supabase Auth, Firebase Auth)
+- **Role-based access control (RBAC)** - Enforce distinct roles: `user` (client), `trainer` (coach), `admin` (platform administrator)
+- **Row-level data isolation** - Users can only access their own data; trainers can only access data for their assigned clients; admins have full access within organizational boundaries
+- **Never trust client-side role flags** - All authorization checks must be performed server-side with cryptographically verified tokens
+- **Session management** - Enforce session expiration (24 hours default); implement token rotation on refresh; revoke tokens on logout
+- **Multi-factor authentication (MFA)** - Optional for users, mandatory for trainers and admins
+
+### 2. Data Protection
+- **Encryption at rest** - Enable AES-256 encryption for all stored data using database provider's native encryption
+- **Encryption in transit** - Enforce HTTPS/TLS 1.3 for all API traffic; reject non-secure connections
+- **No secrets in frontend code** - Never store API keys, tokens, or credentials in client-side code or repositories
+- **Environment variables** - Use secure environment variable management for all configuration secrets
+- **Soft deletes** - Implement soft deletion (archive/deactivate) for all user data; retain for recovery and compliance
+- **Data minimization** - Only collect and store data necessary for core functionality
+- **PII protection** - Mask sensitive personal information in logs and error messages
+
+### 3. Backups & Recovery
+- **Automated daily backups** - Schedule encrypted full database backups every 24 hours
+- **Point-in-time recovery (PITR)** - Enable transaction log backups for recovery to any point within retention window (30 days minimum)
+- **Geographic separation** - Store backups in separate region or availability zone from primary database
+- **Zero-downtime recovery** - Design restore processes that don't require application downtime
+- **Backup testing** - Quarterly restoration drills to validate backup integrity
+- **Retention policy** - Maintain backups for 90 days; archive critical snapshots for 7 years (compliance)
+
+### 4. Dependency & Package Management
+- **Always use latest stable versions** - Keep React, Vite, all UI libraries, and backend frameworks current
+- **Automated vulnerability scanning** - Enable Dependabot, Snyk, or equivalent for continuous dependency monitoring
+- **Block builds on vulnerabilities** - CI/CD pipeline must fail if critical or high-severity vulnerabilities detected
+- **Block deprecated packages** - Prevent builds if dependencies are marked deprecated or unmaintained
+- **Audit frequency** - Run `npm audit` or equivalent weekly; address findings within 7 days for critical, 30 days for high-severity
+- **Avoid unmaintained libraries** - Remove dependencies with no updates in 2+ years or transferred ownership
+
+### 5. API & Backend Security
+- **Input validation & sanitization** - Validate all user inputs against strict schemas (Zod, Joi); sanitize for XSS/injection
+- **Rate limiting** - Implement per-endpoint rate limits (e.g., 100 requests/minute per user); stricter limits on auth endpoints (5 login attempts/hour)
+- **Prevent mass assignment** - Use explicit allowlists for updatable fields; never accept raw request bodies into database models
+- **Generic error messages** - Return user-friendly errors to clients; log detailed stack traces server-side only
+- **Request schema enforcement** - Reject requests that don't match expected structure; validate Content-Type headers
+- **CORS policy** - Restrict cross-origin requests to known domains; never use wildcard (`*`) in production
+- **SQL injection prevention** - Use parameterized queries exclusively; never concatenate user input into SQL strings
+
+### 6. Environment Separation
+- **Maintain separate environments** - Development, Staging, Production with isolated databases and configurations
+- **Never use production credentials in development** - Generate separate API keys, database credentials, and service accounts per environment
+- **Prevent AI access to production** - AI tools (Copilot, ChatGPT) must never access production databases, API keys, or real user data
+- **Environment tagging** - Clearly label all environments in UI (corner ribbon, header color) to prevent accidental production changes
+- **Access control by environment** - Restrict production access to senior engineers and DevOps; all others use staging
+
+### 7. Logging & Auditing
+- **Log security events** - Record all authentication attempts (success/failure), authorization failures, data access, role changes, trainer assignments
+- **Audit trainer actions** - Log when trainers view client data, edit programs, send messages, generate AI insights
+- **AI suggestion tracking** - Record when AI-generated recommendations are accepted, modified, or rejected by coaches
+- **Never log sensitive data** - Exclude passwords, tokens, credit cards, health data (HIPAA), and full API keys from logs
+- **Structured logging** - Use JSON format with consistent fields (timestamp, user_id, action, resource, ip_address)
+- **Retention & archival** - Retain audit logs for 1 year in hot storage, 7 years in cold storage (compliance)
+- **Log monitoring** - Set up alerts for suspicious patterns (repeated auth failures, mass data access, privilege escalation)
+
+### 8. AI Usage Constraints
+- **Read-only mode** - AI must operate in read-only mode on production data; cannot execute write operations without human approval
+- **AI must not modify** - Authentication logic, encryption implementations, access control rules, or database schemas
+- **AI cannot access** - Production secrets, API keys, user passwords, payment details, or PII beyond test data
+- **No destructive operations** - AI cannot delete users, purge data, drop tables, or execute irreversible actions
+- **Respect access control** - AI-generated suggestions must respect row-level security; cannot suggest exposing data across user boundaries
+- **Human-in-the-loop** - All AI-generated coaching insights, program modifications, or client communications require coach review and approval before delivery
+
+### 9. Frontend Security
+- **Prevent XSS (Cross-Site Scripting)** - Sanitize all user-generated content before rendering; use React's built-in escaping; avoid `dangerouslySetInnerHTML`
+- **Content Security Policy (CSP)** - Implement strict CSP headers blocking inline scripts and restricting resource origins
+- **No inline scripts** - Move all JavaScript to external files; use nonces or hashes for necessary inline code
+- **Avoid unsafe evaluations** - Never use `eval()`, `Function()`, or `setTimeout(string)`; use safe alternatives
+- **CSRF protection** - Use anti-CSRF tokens for state-changing operations; verify Origin/Referer headers
+- **Secure cookies** - Set `HttpOnly`, `Secure`, and `SameSite=Strict` flags on session cookies
+- **Dependency integrity** - Use Subresource Integrity (SRI) for CDN resources
+
+### 10. Build & Release Safety
+- **Automated security checks** - Run linters (ESLint with security plugins), SAST tools (Semgrep), and dependency scans on every commit
+- **Pre-release checklist** - Security scan pass, no critical vulnerabilities, all tests passing, code review completed
+- **Build failure on critical issues** - CI/CD must block merges if security linters fail or vulnerabilities exceed threshold
+- **No direct production deploys** - All changes must go through staging environment first; require approval for prod releases
+- **Rollback capability** - Maintain ability to instantly rollback to previous stable version
+- **Deployment auditing** - Log who deployed, what changed, when, and from which commit
+
+### 11. Data Ownership & Compliance
+- **User data export** - Provide users ability to export all their data in portable format (JSON, CSV) within 48 hours
+- **Account deletion (soft delete)** - Users can delete accounts; implement soft delete with 30-day grace period before permanent removal
+- **Trainer data boundaries** - Trainers cannot bulk export user data; must get explicit per-client consent for data sharing
+- **Clear ownership** - Every data entity must have explicit ownership (user_id, trainer_id); enforce at database constraint level
+- **GDPR/CCPA compliance** - Support right to access, right to deletion, right to portability, right to rectification
+- **Data retention policies** - Define and enforce how long different data types are retained; auto-purge after expiration
+- **Consent management** - Track user consent for data processing activities; allow granular consent withdrawal
+
+### 12. Incident Response
+- **Security incident plan** - Document procedures for detecting, responding to, and recovering from security breaches
+- **Breach notification** - Process for notifying affected users within 72 hours of confirmed breach (GDPR requirement)
+- **Security contacts** - Maintain security@yourdomain.com for vulnerability reports; acknowledge within 24 hours
+- **Vulnerability disclosure policy** - Publish responsible disclosure policy; offer bug bounty for critical findings
+
+### 🔒 Non-Negotiable Rule
+
+**Security must be enforced by infrastructure and backend policies, not only by frontend or AI-generated logic.**
+
+- Never rely on frontend validation alone; always validate server-side
+- Authorization checks must occur on every API request, not just UI rendering
+- Encryption, authentication, and access control are non-negotiable—they cannot be disabled for "convenience" or "debugging"
+- When in doubt, default to the most secure option; err on the side of denying access rather than permitting it
