@@ -1,22 +1,36 @@
 import { cn } from '@/lib/utils'
+import { Barbell } from '@phosphor-icons/react'
 
 interface LogoProps {
-  size?: 'sm' | 'md'
+  className?: string
+  size?: 'sm' | 'md' | 'lg' | 'xl'
+}
 
-}onst sizeMap = {
-
-  lg: 'h-16',
-  xl: 'h-20'
+const sizeMap = {
+  sm: 'h-8',
+  md: 'h-10',
+  lg: 'h-12',
+  xl: 'h-16'
 }
 
 export function Logo({ className, size = 'md' }: LogoProps) {
-}
-
-export function Logo({ className, size = 'md' }: LogoProps) {
-  const logoSrc = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAJYCAYAAABP2dGKAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSogMABBAAMASAAgTsEIIR1kxgQkCBBgIAAkCBBgE4REBAQlIsVBJQYBBANRA4PgU4kUAICJZhg/AiQ3AUhgBAAwBhBgAUAECBAChAAgCMAeATwECBRBoAFAAMAuAhBgD5AN4CQCEGAQUcFAgAQABAQQCBgEA4AcA+gAgBQBmAXgBkBsA8AcBMAYAsAMAlQCQAoACgAwAOAEUAZACAAQAoAGwAjADwAMAMgAcACwBpApgB8AoALADQAGQA+AQAEAAIQDgAsACIAHgAiAAwA7AA8AOwBpAFwA9AAMAdQDqABsAXQBrAC0AUwBVAC4AQwA5ADEAPAAzADAAMAAiAdoA1QC9AG0AJwAhABgAGgAWADYATgByAJYAqACwAMoAvgDKAMIAuAAA'
-  
   return (
-    <img 
-      src={logoSrc}
-      alt="Tork Coach Logo"
+    <div className={cn('flex items-center gap-2', className)}>
+      <div className={cn(
+        'rounded-xl bg-primary flex items-center justify-center aspect-square',
+        sizeMap[size]
+      )}>
+        <Barbell className="w-[60%] h-[60%] text-primary-foreground" weight="bold" />
+      </div>
+      <span className={cn(
+        'font-bold font-heading text-foreground',
+        size === 'sm' && 'text-lg',
+        size === 'md' && 'text-xl',
+        size === 'lg' && 'text-2xl',
+        size === 'xl' && 'text-3xl'
+      )}>
+        Tork Coach
+      </span>
+    </div>
+  )
 }
