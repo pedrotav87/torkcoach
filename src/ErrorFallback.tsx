@@ -2,11 +2,7 @@ import { Alert, AlertTitle, AlertDescription } from "./components/ui/alert";
 import { Button } from "./components/ui/button";
 import { ArrowClockwise } from "@phosphor-icons/react";
 
-interface ErrorFallbackProps {
-  resetErrorBoundary: () => void;
-}
-
-export default function ErrorFallback({ resetErrorBoundary }: ErrorFallbackProps) {
+export default function ErrorFallback({ resetErrorBoundary }) {
   return (
     <div className="p-4 max-w-md mx-auto">
       <Alert variant="destructive">
@@ -26,9 +22,6 @@ export default function ErrorFallback({ resetErrorBoundary }: ErrorFallbackProps
     </div>
   );
 }
-
-
-
 
 
 
